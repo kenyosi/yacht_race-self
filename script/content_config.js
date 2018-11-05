@@ -64,6 +64,16 @@ var pile_area = {
 };
 module.exports.pile_area = pile_area;
 
+//yacht
+var yacht = {
+	asset: 'boat_simple',
+	width: 97,
+	height: 252,
+	self: { srcX: 2, srcY: 3},
+	other:{	srcX: 105, srcY: 3},
+};
+module.exports.yacht = yacht;
+
 // Piece
 var view_angle    = 10;
 var piece = {
@@ -139,10 +149,10 @@ module.exports.players = {
 		{id: '-9999', name: '', head: 'Player4: 募集します', timestamp: constant.old_unix_time, time_warning: 0, player_plate: 0, player_plate_status: 0, login: false, group: 'user'},
 	],
 	window_pointer: [
-		{text: 'P1', x: cs[15] + 8, y: cs[1] + 14, width: cs[2], height: cs[2], fontSize: 30, textColor: '#0062ff',
+		{text: 'P1', x: cs[2] + 8, y: +cs[0] + 14, width: cs[2], height: cs[2], fontSize: 30, textColor: '#0062ff',
 			arrow:{srcX:  1, srcY: 130, width: 12, height: 12}, local: local_feature,
 		},
-		{text: 'P2', x: cs[15] + 8, y: cs[5] + 27, width: cs[2], height: cs[2], fontSize: 30, textColor: '#ff0000',
+		{text: 'P2', x: cs[10] + 8, y: +cs[4] + 27, width: cs[2], height: cs[2], fontSize: 30, textColor: '#ff0000',
 			arrow:{srcX: 17, srcY: 130, width: 12, height: 12}, local: local_feature,
 		},
 		{text: 'P3', x: cs[10] + 8, y: cs[5] + 27, width: cs[2], height: cs[2], fontSize: 30, textColor: '#00ff00',

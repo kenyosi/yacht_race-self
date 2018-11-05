@@ -31,7 +31,11 @@ player.prototype.set_default = function () {
 	this.set_local_scene();
 };
 
-player.prototype.set_local_zero = function (p) { this.local_zero = {x: p.x, y: p.y};};
+player.prototype.set_local_zero = function (p) {
+	// this.local_zero = {x: p.x, y: p.y};
+	this.local_zero.x = p.x;
+	this.local_zero.y = p.y;
+};
 player.prototype.set_scale = function (p) {
 	this.scale = {x: p.x, y: p.y};
 	this.inv_scale = {x: 1.0 / p.x, y: 1.0 / p.y};
@@ -98,8 +102,12 @@ player.prototype.calc_rect_part = function(p) {
 
 player.prototype.rect_forward_init = function (rect) {
 	var w = this.calc_rect_part(rect);
-	var p = a_mult_xy_p_v(this.rotate.forward, rect); //x, y
-	p = amb(p, w);
+	var q = a_mult_xy_p_v(this.rotate.forward, rect); //x, y
+	// var q = a_mult_xy_p_v(this.rotate.forward, rect); //x, y
+	// var r = {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+	// var w = this.calc_rect_part(r);
+	// var p = a_mult_xy_p_v(this.rotate.forward, r); //x, y
+	p = amb(q, w);
 	p.width = rect.width;
 	p.height = rect.height;
 	p.scaleX = this.scale.x;
@@ -108,6 +116,23 @@ player.prototype.rect_forward_init = function (rect) {
 	p.angle360 = this.angle360;
 	return p;
 };
+
+player.prototype.point_forward_init = function (rect) {
+	// var w = this.calc_rect_part(rect);
+	var p = a_mult_xy_p_v(this.rotate.forward, rect); //x, y
+	// console.log(p);
+	// p = amb(p, w);
+	// var r = {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+	// var p = a_mult_xy_p_v(this.rotate.forward, r); //x, y
+	p.width = rect.width;
+	p.height = rect.height;
+	p.scaleX = this.scale.x;
+	p.scaleY = this.scale.y;
+	p.angle = this.angle;
+	p.angle360 = this.angle360;
+	return p;
+};
+
 
 player.prototype.rect_forward = function (ev, rect) {
 	var w = this.calc_rect_part(rect);

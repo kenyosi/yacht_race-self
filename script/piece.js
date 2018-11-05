@@ -8,6 +8,7 @@ var conf                       = require('./content_config');
 var board_cell_half_size       = {x: conf.board.cell.size.x / 2, y: conf.board.cell.size.y / 2};
 var n_piece0                   = conf.piece.n - 1;
 var timeout_delta_frame        = 3 * g.game.fps;
+var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
@@ -33,6 +34,126 @@ module.exports.status          = status;
 
 function set_scene(sc) { scene = sc;}
 module.exports.set_scene = set_scene;
+
+// var global_player_index = -1;
+var yacht = function (details) {
+	this.view_player_index = -1;
+	this.player_index = details.player_index;
+	this.global_p = {
+		x: details.x,
+		y: details.y,
+		width: details.width,
+		height: details.height,
+		speed: details.speed,
+		direction: details.direction,
+		rudder: details.rudder,
+	};
+	var local_p = wm.local_scene_player[this.view_player_index].rect_forward_init(this.global_p);
+	var local_scene = wm.local_scene_player[this.view_player_index];
+	var group = new g.E({
+		scene: scene,
+		x: local_p.x,
+		y: local_p.y,
+		width: details.width,
+		height: details.height,
+		angle: local_scene.angle360 + details.direction * two_pi_to_360 + 90,
+		// angle: local_scene.angle360,
+		scaleX: local_scene.scale.x,
+		scaleY: local_scene.scale.y,
+		touchable: true,
+		tag: {
+			type: 'yacht',
+			bw: details.bw,
+			pointer_pressed: 0,
+			player_index: this.player_index,
+			view_player_index: this.view_player_index,
+			last: [],
+			initial: {
+				index: details.initial.index,
+				piece: details.initial.piece,
+				x: details.x,
+				y: details.y,
+			},
+			global: this.global_p,
+		},
+	});
+	scene.append(group);
+	this.group        = group;
+	this.entity_id    = group.id;
+	this.entity_index = scene.children.length - 1;
+	// group_id.push(group.id);
+	// index.push(scene.children.length - 1);
+
+	group.update.add(function() {
+		// var vec = [1.00, group.tag.global.rudder];
+		// var vec_len = Math.sqrt(1 + group.tag.global.rudder * group.tag.global.rudder);
+		// vec[0] /= vec_len;
+		// vec[1] /= vec_len;
+		// var dd = Math.acos(vec[0]);
+		// var dx = Math.cos(group.tag.global.direction));
+		// var dy= (group.tag.global.speed * Math.sin(group.tag.global.direction));
+		// dx += group.tag.global.rudder * (group.tag.global.speed * Math.cos(group.tag.global.direction));
+		// dy += group.tag.global.rudder * (group.tag.global.speed * Math.sin(group.tag.global.direction));
+		group.tag.global.x += (group.tag.global.speed * Math.cos(group.tag.global.direction));
+		group.tag.global.y += (group.tag.global.speed * Math.sin(group.tag.global.direction));
+		group.tag.global.direction += group.tag.global.rudder;
+		// if (group.tag.player_index !== group.tag.view_player_index) {
+		// var xy_l = wm.local_scene_player[group.tag.view_player_index].rect_forward_init(group.tag.global);
+		// wm.local_scene_player[2].set_local_scene();
+		var xy_l = wm.local_scene_player[2].rect_forward_init(group.tag.global);
+		if (group.tag.initial.index == 2) {
+			// console.log(xy_l);
+		}
+		group.x = xy_l.x;
+		group.y = xy_l.y;
+		// }
+		// group.angle = group.tag.global.direction * two_pi_to_360 + 90;
+		group.angle = group.tag.global.direction * two_pi_to_360 + 90 + wm.local_scene_player[group.tag.view_player_index].angle360;
+		group.modified();
+	});
+
+	var ii = 0;
+	while (ii < conf.players.max_players) {
+		group.tag.last[ii] = {
+			ev: undefined,
+			timestamp: g.game.age,
+			pointer_pressed: 0,
+		};
+		ii++;
+	}
+	group.append(
+		new g.FilledRect({
+			scene: scene,
+			cssColor: conf.piece.unselect.background.cssColor,
+			opacity: conf.piece.unselect.background.opacity,
+			width: details.width,
+			height: details.height,
+		}));
+	group.append(new g.Sprite(details.piece));
+	// group.angle += 90;
+	// group.modified();
+
+};
+module.exports.yacht = yacht;
+
+yacht.prototype.set_player_index = function (player_index) {
+	this.player_index = player_index;
+	this.group.tag.player_index = player_index;
+};
+
+yacht.prototype.set_view_player_index = function (view_player_index) {
+	this.view_player_index = view_player_index;
+	this.group.tag.view_player_index = view_player_index;
+	if (this.player_index === this.view_player_index) {
+		this.group.children[1].srcX = conf.yacht.self.srcX;
+		this.group.children[1].srcY = conf.yacht.self.srcY;
+	}
+	else {
+		this.group.children[1].srcX = conf.yacht.other.srcX;
+		this.group.children[1].srcY = conf.yacht.other.srcY;
+	}
+
+};
 
 function set_pile_areas(p) {
 	pile_areas = p;

@@ -112,6 +112,12 @@
 			"type": "script",
 			"path": "script/self/message_event_manager.js",
 			"global": true
+		},
+		"boat_simple": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/boat_simple.png"
 		}
 	},
 	"environment": {
