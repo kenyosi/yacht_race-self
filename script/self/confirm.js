@@ -10,6 +10,7 @@ var conf                       = require('../content_config');
 // Initialization
 var wm                         = require('./window_manager');
 var player                     = require('./player');
+var font                       = require('./font');
 var scene;
 var cs = conf.cell.array;
 
@@ -86,7 +87,7 @@ function create(p, x, y, ci) {// ci is kept for future use
 	yes_group.append(yes_background);
 	var ha = new g.Label({
 		scene: scene,
-		font: conf.default_font,
+		font: font.bitmap['16_default'],
 		text: 'は い',
 		fontSize: 16,
 		textColor:  'black',
@@ -129,7 +130,7 @@ function create(p, x, y, ci) {// ci is kept for future use
 	no_group.append(no_background);
 	var ii1 = new g.Label({
 		scene: scene,
-		font: conf.default_font,
+		font: font.bitmap['16_default'],
 		text: 'いいえ',
 		fontSize: 16,
 		textColor:  'black',
@@ -158,7 +159,7 @@ function create(p, x, y, ci) {// ci is kept for future use
 		var t = p.text[i];
 		var tt = new g.Label({
 			scene: scene,
-			font: conf.default_font,
+			font: font.bitmap['16_default'],
 			text: t.s,
 			fontSize: t.font_size,
 			textColor:  p.label.cssColor,

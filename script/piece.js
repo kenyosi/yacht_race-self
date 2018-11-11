@@ -1,6 +1,6 @@
 /*
  * Piece in board
- * reversi@self, Akashic content
+ * yacht_race@self, Akashic content
  */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration
@@ -13,7 +13,8 @@ var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var scene;
-// var commenting                 = require('commenting');
+// var commenting                 = require('./self/commenting');
+var conf                         = require('./content_config');
 var process                    = require('./self/process');
 var player                     = require('./self/player');
 var pointer                    = require('./self/pointer');
@@ -25,6 +26,8 @@ var pile_areas                 = [];
 var pile_areas_length;
 var status                     = {}; //for revierging piece detection
 var camera_position_pointDown;
+
+var piece_p = {};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports.index           = index;
@@ -47,6 +50,7 @@ var yacht = function (details) {
 		speed: details.speed,
 		direction: details.direction,
 		rudder: details.rudder,
+		throttle: details.throttle,
 	};
 	var local_p = wm.local_scene_player[this.view_player_index].rect_forward_init(this.global_p);
 	var local_scene = wm.local_scene_player[this.view_player_index];
@@ -57,7 +61,6 @@ var yacht = function (details) {
 		width: details.width,
 		height: details.height,
 		angle: local_scene.angle360 + details.direction * two_pi_to_360 + 90,
-		// angle: local_scene.angle360,
 		scaleX: local_scene.scale.x,
 		scaleY: local_scene.scale.y,
 		touchable: true,
@@ -77,37 +80,28 @@ var yacht = function (details) {
 			global: this.global_p,
 		},
 	});
-	scene.append(group);
+	details.local_scene.append(group);
 	this.group        = group;
 	this.entity_id    = group.id;
 	this.entity_index = scene.children.length - 1;
-	// group_id.push(group.id);
-	// index.push(scene.children.length - 1);
+	piece_p[details.player_index] = this;
 
 	group.update.add(function() {
-		// var vec = [1.00, group.tag.global.rudder];
-		// var vec_len = Math.sqrt(1 + group.tag.global.rudder * group.tag.global.rudder);
-		// vec[0] /= vec_len;
-		// vec[1] /= vec_len;
-		// var dd = Math.acos(vec[0]);
-		// var dx = Math.cos(group.tag.global.direction));
-		// var dy= (group.tag.global.speed * Math.sin(group.tag.global.direction));
-		// dx += group.tag.global.rudder * (group.tag.global.speed * Math.cos(group.tag.global.direction));
-		// dy += group.tag.global.rudder * (group.tag.global.speed * Math.sin(group.tag.global.direction));
+		group.tag.global.speed += group.tag.global.throttle;
+		if (Math.abs(group.tag.global.speed) <= 0.005) return;
+		// console.log(group.tag.global.speed);
 		group.tag.global.x += (group.tag.global.speed * Math.cos(group.tag.global.direction));
 		group.tag.global.y += (group.tag.global.speed * Math.sin(group.tag.global.direction));
-		group.tag.global.direction += group.tag.global.rudder;
-		// if (group.tag.player_index !== group.tag.view_player_index) {
-		// var xy_l = wm.local_scene_player[group.tag.view_player_index].rect_forward_init(group.tag.global);
-		// wm.local_scene_player[2].set_local_scene();
+		// console.log(group.tag.global.rudder);
+		group.tag.global.direction += group.tag.global.rudder * group.tag.global.speed;
+		group.tag.global.speed *= (1 - conf.const.friction - 2*Math.abs(group.tag.global.rudder));
+		// console.log(group.tag.global.speed);
 		var xy_l = wm.local_scene_player[2].rect_forward_init(group.tag.global);
 		if (group.tag.initial.index == 2) {
 			// console.log(xy_l);
 		}
 		group.x = xy_l.x;
 		group.y = xy_l.y;
-		// }
-		// group.angle = group.tag.global.direction * two_pi_to_360 + 90;
 		group.angle = group.tag.global.direction * two_pi_to_360 + 90 + wm.local_scene_player[group.tag.view_player_index].angle360;
 		group.modified();
 	});
@@ -155,11 +149,34 @@ yacht.prototype.set_view_player_index = function (view_player_index) {
 
 };
 
+yacht.prototype.set_rudder = function (value) {
+	var group =this.group;
+	group.tag.global.rudder = value;
+};
+
 function set_pile_areas(p) {
 	pile_areas = p;
 	pile_areas_length = p.length;
 }
 module.exports.set_pile_areas = set_pile_areas;
+
+function set_rudder(mes) {
+	// console.log(mes);
+	var player_index = mes.data.player_index;
+	var rudder = mes.data.value;
+	// console.log(piece_p);
+	piece_p[player_index].group.tag.global.rudder = rudder;
+}
+module.exports.set_rudder = set_rudder;
+
+function set_throttle(mes) {
+	// console.log(mes);
+	var player_index = mes.data.player_index;
+	var throttle = mes.data.value;
+	// console.log(piece_p);
+	piece_p[player_index].group.tag.global.throttle = throttle;
+}
+module.exports.set_throttle = set_throttle;
 
 var boundary = function (object) {
 	this.width = object.width;

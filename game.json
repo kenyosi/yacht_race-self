@@ -118,6 +118,41 @@
 			"width": 256,
 			"height": 256,
 			"path": "image/boat_simple.png"
+		},
+		"operation": {
+			"type": "script",
+			"path": "script/operation.js",
+			"global": true
+		},
+		"race": {
+			"type": "script",
+			"path": "script/race.js",
+			"global": true
+		},
+		"font16_1": {
+			"type": "image",
+			"width": 256,
+			"height": 96,
+			"path": "image/font16_1.png"
+		},
+		"glyph_area_16": {
+			"type": "text",
+			"path": "text/glyph_area_16.json"
+		},
+		"font": {
+			"type": "script",
+			"path": "script/self/font.js",
+			"global": true
+		},
+		"starting_countdown": {
+			"type": "script",
+			"path": "script/self/starting_countdown.js",
+			"global": true
+		},
+		"dialog": {
+			"type": "script",
+			"path": "script/self/dialog.js",
+			"global": true
 		}
 	},
 	"environment": {

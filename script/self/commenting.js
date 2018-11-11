@@ -8,6 +8,8 @@ var conf                       = require('../content_config');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
+var font                       = require('./font');
+
 var scene;
 var messaging_que              = [];
 var latest_que_index           = conf.comment.que.size - 1;
@@ -61,7 +63,7 @@ function create(mes_text) {
 	if (messaging_index >= conf.comment.lines) return false;
 	var messaging = new g.Label({
 		scene: scene,
-		font: conf.comment_font,
+		font: font.bitmap['comment'],
 		text: mes_text,
 		tag: {type: 'absolute'},
 		fontSize: conf.comment.properies.fontSize,

@@ -13,6 +13,7 @@ var constant = {
 	old_time:        -30 * 24 * 60 * 60 * g.game.fps, //
 	random_seed_number: current_time,                 // 0 for development
 	unit: {x: 32, y: 32, width: 32, height: 32},
+	friction: 0.01,
 };
 module.exports.const = constant;
 
@@ -136,9 +137,25 @@ module.exports.game_icon = game_icon;
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Common, @self
 ////////////////////////////////////////////////////////////////////////////////////////////
+// Local scene
+var local_feature = false;
+var local = {
+	area: {
+		x: 0,
+		y: 0,
+		width: g.game.width * 0.6,
+		height: g.game.height,
+	},
+	operation: {
+		x: g.game.width * 0.6 + 1,
+		y: 0,
+		width: g.game.width * 0.4,
+		height: g.game.height,
+	},
+};
+module.exports.local = local;
 
 // Players
-var local_feature = false;
 module.exports.players = {
 	max_players: 2,
 	admin : [true, false, false, false],
@@ -385,31 +402,3 @@ var default_button = {
 	opacity: 0.5,
 };
 module.exports.default_button = default_button;
-
-////////////////////////////////////////////////////////////////////////////////////////////
-// Fonts
-var default_label = {
-	fontSize: 12,
-	cssColor: default_button.cssColor,
-	opacity: default_button.opacity,
-};
-module.exports.default_label = default_label;
-
-var here_font = new g.DynamicFont({
-	game: g.game,
-	fontFamily: g.FontFamily.SansSerif,
-	fontWeight: 1,
-	size: default_label.fontSize,
-});
-module.exports.default_font = here_font;
-
-var comment_font = new g.DynamicFont({
-	game: g.game,
-	fontFamily: g.FontFamily.SansSerif,
-	fontWeight: 1,
-	size: comment.properies.fontSize,
-	fontColor: comment.properies.cssColor,
-	strokeColor: comment.properies.strokeColor,
-	strokeWidth: comment.properies.strokeWidth,
-});
-module.exports.comment_font = comment_font;

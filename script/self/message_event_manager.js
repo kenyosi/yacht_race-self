@@ -18,12 +18,16 @@ function eval_function() {}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function set_scene(sc) {
 	events = {
+		piece_set_rudder: piece.set_rudder,
+		piece_set_throttle: piece.set_throttle, 
+
 		piece_other_local_down: piece.other_local_down,
 		piece_other_local_move: piece.other_local_move,
 		piece_other_local_up: piece.other_local_up,
 		pointer_other_local_down: pointer.other_local_down,
 		pointer_other_local_move: pointer.other_local_move,
 		pointer_other_local_up: pointer.other_local_up,
+
 		eval_function: eval_function,
 	};
 	scene = sc;

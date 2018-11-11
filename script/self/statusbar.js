@@ -4,10 +4,11 @@
  */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration
-var conf                       = require('../content_config');
+// var conf                       = require('../content_config');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var player                     = require('./player');
+var font                       = require('./font');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var bottom = function(style, scene) {
@@ -35,7 +36,7 @@ var bottom = function(style, scene) {
 	frame.append(background);
 	var message = new g.Label({
 		scene: scene,
-		font: conf.default_font,
+		font: font.bitmap['16_default'],
 		text: '',
 		fontSize: 16,
 		textColor:  'black',

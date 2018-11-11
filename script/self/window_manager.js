@@ -24,9 +24,11 @@ var admin_control              = require('./admin_control');
 var help                       = require('./help');
 var statusbar                  = require('./statusbar');
 var confirm                    = require('./confirm');
+var dialog                     = require('./dialog');
 var commenting                 = require('./commenting');
 var local_scene                = require('./local_scene');
 var message_event              = require('./message_event_manager');
+var font                       = require('./font');
 var semaphoe                   = new process.semaphore(1);
 
 var player_operations = [];
@@ -69,9 +71,10 @@ function set_scene(sc) {
 	message_event.set_scene(sc);
 	common_control.set_scene(sc);
 	confirm.set_scene(scene);
+	dialog.set_scene(scene);
 	commenting.set_scene(scene);
 	help.set_scene(scene, view);
-	pointer.set_scene(scene);
+	// pointer.set_scene(scene);
 }
 module.exports.set_scene = set_scene;
 
@@ -93,7 +96,7 @@ function createLoginControl(target_player_index, x, y, w, h, style, confirm_obje
 	};
 	var name = new g.Label({
 		scene: scene,
-		font: conf.default_font,
+		font: font.bitmap['14_default'],
 		text: player.head[group.tag.target_player_index],
 		fontSize: 14,
 		textColor:  '#000000',
@@ -193,19 +196,19 @@ function create() {
 
 	help.create_board(conf.help_board, 0, 0); // Help board
 
-	var player_index = 0;
-	while (player_index < conf.players.max_players) {
-		var jj = conf.window.max_pointers - 1;
-		while (jj > 0) {
-			var pp = new pointer.user(player_index, jj, conf.players.window_pointer[player_index]);
-			pp.pointer.hide();
-			jj--;
-		}
-		var p = new pointer.user(player_index, 0, conf.players.window_pointer[player_index]);
-		pointer_login[player_index] = p.pointer.children[1];
-		pointer.update_by_operation('on', player_index, undefined);
-		++player_index;
-	}
+	// var player_index = 0;
+	// while (player_index < conf.players.max_players) {
+	// 	var jj = conf.window.max_pointers - 1;
+	// 	while (jj > 0) {
+	// 		var pp = new pointer.user(player_index, jj, conf.players.window_pointer[player_index]);
+	// 		pp.pointer.hide();
+	// 		jj--;
+	// 	}
+	// 	var p = new pointer.user(player_index, 0, conf.players.window_pointer[player_index]);
+	// 	pointer_login[player_index] = p.pointer.children[1];
+	// 	pointer.update_by_operation('on', player_index, undefined);
+	// 	++player_index;
+	// }
 	// player_index = player.find_index(g.game.player.id);
 	commenting.post('使い方は右下の[？]アイコンをタップ下さい');
 	if (player.caster_joined && !player.current[0].login) {
