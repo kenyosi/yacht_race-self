@@ -4,16 +4,12 @@
  */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration
-var conf                       = require('../content_config');
+// var conf                       = require('../content_config');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var scene;
 var font                       = require('./font');
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function set_scene(sc) { scene = sc;}
@@ -80,7 +76,7 @@ var normal = function (p) {
 	this.text = tt;
 	// common parts
 
-	background.pointDown.add(function (ev) {
+	background.pointDown.add(function () {
 		if (background.tag.parent.tag.callback_function === undefined) return;
 		background.tag.parent.hide();
 		background.tag.parent.tag.callback_function();

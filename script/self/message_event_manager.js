@@ -9,6 +9,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var pointer                    = require('./pointer');
+var starting_countdown         = require('./starting_countdown');
 var piece                      = require('../piece');
 var scene;
 var events; // should define in set_scene not here, or missing piece.other_local_down
@@ -27,7 +28,7 @@ function set_scene(sc) {
 		pointer_other_local_down: pointer.other_local_down,
 		pointer_other_local_move: pointer.other_local_move,
 		pointer_other_local_up: pointer.other_local_up,
-
+		starting_countdown_sync_timer: starting_countdown.sync_timer,
 		eval_function: eval_function,
 	};
 	scene = sc;

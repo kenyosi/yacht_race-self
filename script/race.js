@@ -7,7 +7,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration
-var conf                       = require('./content_config');
+// var conf                       = require('./content_config');
 
 var check_point_status = [
 	{status: 'observer',    cssColor: '#AAAAAA', label: 'チェック'},
@@ -109,7 +109,6 @@ check_area.prototype.set_status = function (status_index) {
 	this.status.text = check_point_status[status_index].label;
 	this.status.textColor = check_point_status[status_index].cssColor;
 	this.status.invalidate();
-	// this.name.text = check_point_status[status_index].label;
 	this.name.textColor = check_point_status[status_index].cssColor;
 	this.name.invalidate();
 	this.background.modified();

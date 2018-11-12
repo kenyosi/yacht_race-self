@@ -26,8 +26,8 @@ var op                         = require('./operation');
 // var set_inital_locations       = require('./set_initial_locations');
 var starting_countdown         = require('./self/starting_countdown');
 var wm                         = require('./self/window_manager');
-var local_scene                = require('./self/local_scene');
-var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
+// var local_scene                = require('./self/local_scene');
+// var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
 var dd = [];
 var lpv = {x: 0, y: 0};
 var pop;
@@ -57,7 +57,6 @@ function scene_loaded(scene) {
 		height: conf.local.area.height,
 	});
 	scene.append(pa);
-	// var lpv = new g.E({
 	lpv = new g.E({
 		scene: scene,
 		x: conf.local.area.x,
@@ -205,44 +204,6 @@ function scene_loaded(scene) {
 	}
 
 	var test = new starting_countdown.joining();
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// after joining
-	wm.local_scene_player[2].set_local_scene();
-
-	details = {
-		local_scene: lpv,
-		x: conf.local.area.x + conf.local.area.width / 2  - conf.yacht.width / 2,
-		y: conf.local.area.y + conf.local.area.height / 2 - conf.yacht.height / 2,
-		width: conf.yacht.width,
-		height: conf.yacht.height,
-		speed: self_view.speed,
-		direction: self_view.direction,
-		rudder: self_view.rudder,
-		throttle: 0,
-		player_index: 2,
-		bw: ii,
-		piece: {
-			scene: scene,
-			src: scene.assets['boat_simple'],
-			opacity: 1.0,
-			width: conf.yacht.width,
-			height: conf.yacht.height,
-			srcX: conf.yacht.self.srcX,
-			srcY: conf.yacht.self.srcY,
-			srcWidth: conf.yacht.width,
-			srcHeight: conf.yacht.height,
-		},
-		initial: {
-			index: 2,
-			piece: 0,
-		},
-	};
-	// dd[2] = new piece.yacht(details);
-	// dd[2].set_player_index(2);
-	// dd[2].set_view_player_index(2);
-	// dd[2].set_rudder(0.00);
-
-	// pop = new op.user_interface(details);
 	var check_index = 0;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -269,11 +230,12 @@ function scene_loaded(scene) {
 		lpv.y = -(xy.y - cv0[1])/8;
 		if (in_goal) return;
 		if (check_area[check_index].validate(dd[2])) {
-			starting_countdown.pop.set_line_message('チェックタイム: ' + g.game.age);
+			var t = g.game.age - starting_countdown.race_status.starting_age;
+			starting_countdown.pop.set_line_message('チェックタイム: ' + t);
 			check_area[check_index].set_status(3);
 			check_index++;
 			if (check_index >= check_area.length) {
-				starting_countdown.pop.set_line_message('ゴールタイム: ' + g.game.age);
+				starting_countdown.pop.set_line_message('ゴールタイム: ' + t);
 				in_goal = true;
 				return;
 			}
@@ -301,28 +263,28 @@ module.exports = main;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function indTo2D(ii, dim) {
-	var cood = [];
-	cood[0] = ii % dim;
-	cood[1] = (ii -  cood[0]) / dim;
-	return cood;
-}
+// function indTo2D(ii, dim) {
+// 	var cood = [];
+// 	cood[0] = ii % dim;
+// 	cood[1] = (ii -  cood[0]) / dim;
+// 	return cood;
+// }
 
-function createBoard(p, player_index, scene) {
-	var local_p = wm.local_scene_player[player_index].rect_forward_init(p);
-	return new g.FilledRect({
-		scene: scene,
-		cssColor: conf.default_label.cssColor,
-		opacity: conf.default_label.opacity,
-		x: local_p.x,
-		y: local_p.y,
-		width: local_p.width,
-		height: local_p.height,
-		angle: local_p.angle360,
-		scaleX: local_p.scaleX,
-		scaleY: local_p.scaleY,
-		tag: {
-			global: p
-		}
-	});
-}
+// function createBoard(p, player_index, scene) {
+// 	var local_p = wm.local_scene_player[player_index].rect_forward_init(p);
+// 	return new g.FilledRect({
+// 		scene: scene,
+// 		cssColor: conf.default_label.cssColor,
+// 		opacity: conf.default_label.opacity,
+// 		x: local_p.x,
+// 		y: local_p.y,
+// 		width: local_p.width,
+// 		height: local_p.height,
+// 		angle: local_p.angle360,
+// 		scaleX: local_p.scaleX,
+// 		scaleY: local_p.scaleY,
+// 		tag: {
+// 			global: p
+// 		}
+// 	});
+// }

@@ -6,19 +6,19 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration
 var conf                       = require('./content_config');
-var board_cell_half_size       = {x: conf.board.cell.size.x / 2, y: conf.board.cell.size.y / 2};
-var n_piece0                   = conf.piece.n - 1;
-var timeout_delta_frame        = 3 * g.game.fps;
-var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
+// var board_cell_half_size       = {x: conf.board.cell.size.x / 2, y: conf.board.cell.size.y / 2};
+// var n_piece0                   = conf.piece.n - 1;
+// var timeout_delta_frame        = 3 * g.game.fps;
+// var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var scene;
-
-var process                    = require('./self/process');
-var player                     = require('./self/player');
-var pointer                    = require('./self/pointer');
-var wm                         = require('./self/window_manager');
+var starting_countdown         = require('./self/starting_countdown');
+// var process                    = require('./self/process');
+// var player                     = require('./self/player');
+// var pointer                    = require('./self/pointer');
+// var wm                         = require('./self/window_manager');
 var font                       = require('./self/font');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +139,7 @@ var user_interface = function (details) {
 	rudder.pointDown.add(function () {
 	});
 	rudder.pointMove.add(function (ev) {
+		if (!starting_countdown.race_status.in_race) return;
 		rudder.tag.x += ev.prevDelta.x;
 		var x = rudder.tag.x;
 		x = (x >= rudder.tag.range[0] ? x : rudder.tag.range[0]);
@@ -151,6 +152,7 @@ var user_interface = function (details) {
 	});
 
 	throttle.pointMove.add(function (ev) {
+		if (!starting_countdown.race_status.in_race) return;
 		throttle.tag.y += ev.prevDelta.y;
 		var y = throttle.tag.y;
 		y = (y >= throttle.tag.range[0] ? y : throttle.tag.range[0]);
