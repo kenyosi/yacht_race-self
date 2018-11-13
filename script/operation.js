@@ -139,7 +139,7 @@ var user_interface = function (details) {
 	rudder.pointDown.add(function () {
 	});
 	rudder.pointMove.add(function (ev) {
-		if (!starting_countdown.race_status.in_race) return;
+		if (starting_countdown.play_status.phase != 3) return;
 		rudder.tag.x += ev.prevDelta.x;
 		var x = rudder.tag.x;
 		x = (x >= rudder.tag.range[0] ? x : rudder.tag.range[0]);
@@ -152,7 +152,7 @@ var user_interface = function (details) {
 	});
 
 	throttle.pointMove.add(function (ev) {
-		if (!starting_countdown.race_status.in_race) return;
+		if (starting_countdown.play_status.phase != 3) return;
 		throttle.tag.y += ev.prevDelta.y;
 		var y = throttle.tag.y;
 		y = (y >= throttle.tag.range[0] ? y : throttle.tag.range[0]);

@@ -9,11 +9,16 @@ var conf                       = require('../content_config');
 // Initialization
 var scene;
 var starting_dialog;
-var race_status = {
-	stage: 0,
+var play_status = {
+	// 0: play registration
+	// 1: if the player joined, and waiting. It's still in registration phase
+	// 2: Countdown
+	// 3: in_play
+	// 4: after goal
+	phase: 0,
 	starting_age: undefined,
 	ending_age: undefined,
-	in_race: false,
+	// in_race: false,
 };
 // var player                     = require('./player');
 var piece                      = require('../piece');
@@ -25,7 +30,7 @@ var ma                         = require('../main');
 var lpv;
 var pop;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-module.exports.race_status = race_status;
+module.exports.play_status = play_status;
 
 function set_scene(sc) { scene = sc;}
 module.exports.set_scene = set_scene;
@@ -33,6 +38,7 @@ function set_lpv(p) { lpv = p;}
 module.exports.set_lpv = set_lpv;
 
 var joining = function () {
+	play_status.phase = 0;
 	var p = {
 		label: {
 			cssColor: 'black',
@@ -56,10 +62,11 @@ var joining = function () {
 module.exports.joining = joining;
 
 function wait_other_joining() {
+	play_status.phase = 1;
 	var q = {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: 'P2で受付けました'},
-			{x: 4, y:  14 + 18*1, font_size: 16, s: 'ほかの参加者をお待ち下さい'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: '他の参加者を待っています'},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: ''},
 		],
 		callback_function: undefined,
@@ -103,13 +110,13 @@ function wait_other_joining() {
 	pop = new op.user_interface(details);
 	module.exports.pop = pop;
 
-	race_status.starting_age = g.game.age + g.game.fps * 5;
-	race_status.ending_age   = g.game.age + g.game.fps * (5 + 60);// tentative number
+	play_status.starting_age = g.game.age + g.game.fps * 5;
+	play_status.ending_age   = g.game.age + g.game.fps * (5 + 60);// tentative number
 	var mes = {
 		data: {
 			destination: 'starting_countdown_sync_timer',
 			player_index: 2,
-			value: race_status,
+			value: play_status,
 		}
 	};
 	scene.message.fire(mes);
@@ -118,26 +125,28 @@ function wait_other_joining() {
 
 var current_count;
 function sync_timer(mes) {
-	current_count = mes.data.value.starting_age;
+	play_status = mes.data.value;
+	play_status.phase = 2;
+	// current_count = mes.data.value.starting_age;
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: ''},
-			{x: 4, y:  14 + 18*1, font_size: 16, s: 'スタートまで'},
-			{x: 4, y:  14 + 18*2, font_size: 16, s: Math.ceil(current_count / g.game.fps).toString()},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: 'スタートまで'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: Math.ceil((play_status.starting_age - g.game.age) / g.game.fps).toString()},
+			{x: 4, y:  14 + 18*2, font_size: 16, s: '操船はスタート後です'},
 		],
 		callback_function: undefined,
 	};
 	starting_dialog.set_text(q);
 
-	starting_dialog.text[2].update.add(function countdown_timer(){
-		current_count--;
+	starting_dialog.text[1].update.add(function countdown_timer(){
+		current_count = play_status.starting_age - g.game.age;
 		if (current_count % g.game.fps != 0) return;
 		var cn = current_count / g.game.fps;
-		starting_dialog.text[2].text = cn.toString();
-		starting_dialog.text[2].invalidate();
+		starting_dialog.text[1].text = cn.toString();
+		starting_dialog.text[1].invalidate();
 		if (cn != 0) return;
-		race_status.in_race = true;
-		starting_dialog.text[2].update.remove(countdown_timer);
+		play_status.phase = 3;
+		starting_dialog.text[1].update.remove(countdown_timer);
 		starting_dialog.group.hide();
 	});
 

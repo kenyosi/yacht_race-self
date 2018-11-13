@@ -230,7 +230,7 @@ function scene_loaded(scene) {
 		lpv.y = -(xy.y - cv0[1])/8;
 		if (in_goal) return;
 		if (check_area[check_index].validate(dd[2])) {
-			var t = g.game.age - starting_countdown.race_status.starting_age;
+			var t = g.game.age - starting_countdown.play_status.starting_age;
 			starting_countdown.pop.set_line_message('チェックタイム: ' + t);
 			check_area[check_index].set_status(3);
 			check_index++;
