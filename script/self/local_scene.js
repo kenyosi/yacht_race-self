@@ -36,7 +36,6 @@ player.prototype.set_default = function () {
 };
 
 player.prototype.set_local_zero = function (p) {
-	// this.local_zero = {x: p.x, y: p.y};
 	this.local_zero.x = p.x;
 	this.local_zero.y = p.y;
 };
@@ -77,6 +76,10 @@ player.prototype.set_local_scene = function () {
 				-(rfm[0][0] * gc[0] + rfm[0][1] * gc[1]) + lc[0], // -(cos_r * this.scale.x * gc[0] - sin_r * this.scale.y * gc[1]) + lc[0],
 				-(rfm[1][0] * gc[0] + rfm[1][1] * gc[1]) + lc[1], // -(sin_r * this.scale.x * gc[0] + cos_r * this.scale.y * gc[1]) + lc[1],
 			],
+			vector_center: [
+				lc[0], 
+				lc[1],
+			],
 		},
 		inverse: {
 			matrix: [
@@ -111,7 +114,11 @@ player.prototype.rect_forward_init = function (rect) {
 	// var r = {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
 	// var w = this.calc_rect_part(r);
 	// var p = a_mult_xy_p_v(this.rotate.forward, r); //x, y
-	p = amb(q, w);
+
+	var p = amb(q, w);
+	p.center_x = q.x + rect.width  / 2.0;
+	p.center_y = q.y + rect.height / 2.0;
+
 	p.width = rect.width;
 	p.height = rect.height;
 	p.scaleX = this.scale.x;

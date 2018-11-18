@@ -14,7 +14,7 @@ var conf                       = require('./content_config');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var scene;
-var starting_countdown         = require('./self/starting_countdown');
+var game_manager         = require('./self/game_manager');
 // var process                    = require('./self/process');
 // var player                     = require('./self/player');
 // var pointer                    = require('./self/pointer');
@@ -26,7 +26,8 @@ function set_scene(sc) { scene = sc;}
 module.exports.set_scene = set_scene;
 
 var user_interface = function (details) {
-	this.view_player_index = details.player_index; // tentative
+	// this.view_player_index = details.player_index; // tentative
+	this.view_player_index = -1; // tentative
 	this.player_index = details.player_index;
 	this.text_message_y      = 0;
 	this.text_message_height = 12;
@@ -37,13 +38,18 @@ var user_interface = function (details) {
 		y: clo.y,
 		width: clo.width,
 		height: clo.height,
+		tag:{
+			initial:{
+				rudder_x :0.40 * clo.width,
+				throttle_y:0.30 * clo.height,
+			},
+		},
 	});
+	opp.hide();
 	scene.append(opp);
 	this.opp = opp;
 	var operation = new g.E({
 		scene: scene,
-		// x: clo.x,
-		// y: clo.y,
 		width: clo.width,
 		height: clo.height,
 	});
@@ -66,7 +72,6 @@ var user_interface = function (details) {
 
 	var line_text = new g.Label({
 		scene: scene,
-		// font: conf.default_font,
 		font: font.bitmap['14_default'],
 		text: '',
 		textColor:  '#AAAAAA',
@@ -76,7 +81,6 @@ var user_interface = function (details) {
 	});
 	operation.append(line_text);
 	this.line_text = line_text;
-
 
 	var rudder_background = new g.FilledRect({
 		scene: scene,
@@ -92,8 +96,8 @@ var user_interface = function (details) {
 	var rudder = new g.FilledRect({
 		scene: scene,
 		cssColor: '#0062ff',
-		opacity: 1.0,
-		x: 0.40 * clo.width,
+		opacity: 1.0,//this.opp
+		x: this.opp.tag.initial.rudder_x, // 0.40 * clo.width,
 		y: 0.80 * clo.height,
 		width: 0.2 * clo.width,
 		height: 0.2 * clo.height,
@@ -102,10 +106,24 @@ var user_interface = function (details) {
 			range: [0.10 * clo.width, 0.7 * clo.width],
 			x: 0.45 * clo.width,
 			value: 0.5,
-			player_index: details.player_index
+			player_index: details.player_index,
+			rudder_move: 
+				function rudder_move(ev) {
+					if (game_manager.play_status.phase != 5) return;
+					rudder.tag.x += ev.prevDelta.x;
+					var x = rudder.tag.x;
+					x = (x >= rudder.tag.range[0] ? x : rudder.tag.range[0]);
+					x = (x <= rudder.tag.range[1] ? x : rudder.tag.range[1]);
+					rudder.tag.value = ((x - rudder.tag.range[0]) / (0.6 * clo.width) - 0.5);
+					rudder.tag.value /= 128;
+					rudder.x = x;
+					send('piece_set_rudder', rudder.tag.player_index, rudder.tag.value);
+					rudder.modified();
+				}
 		}
 	});
 	operation.append(rudder);
+	this.rudder = rudder;
     
 	var throttle_background = new g.FilledRect({
 		scene: scene,
@@ -123,7 +141,7 @@ var user_interface = function (details) {
 		cssColor: '#0062ff',
 		opacity: 1.0,
 		x: 0.80 * clo.width,
-		y: 0.30 * clo.height,
+		y: this.opp.tag.initial.throttle_y, // 0.30 * clo.height,
 		width: 0.2 * clo.width,
 		height: 0.2 * clo.height,
 		touchable: true,
@@ -131,48 +149,53 @@ var user_interface = function (details) {
 			range: [0.10 * clo.height, 0.5 * clo.height],
 			y: 0.40 * clo.height,
 			value: 0.5,
-			player_index: details.player_index
+			player_index: details.player_index,
+			throttle_move:
+				function throttle_move(ev) {
+					if (game_manager.play_status.phase != 5) return;
+					throttle.tag.y += ev.prevDelta.y;
+					var y = throttle.tag.y;
+					y = (y >= throttle.tag.range[0] ? y : throttle.tag.range[0]);
+					y = (y <= throttle.tag.range[1] ? y : throttle.tag.range[1]);
+					throttle.tag.value = -((y - throttle.tag.range[0]) / (0.6 * clo.width) - 0.5);
+					throttle.tag.value /= 2;
+					throttle.y = y;
+					send('piece_set_throttle', throttle.tag.player_index, throttle.tag.value);
+					throttle.modified();
+				}
 		}
 	});
 	operation.append(throttle);
-
-	rudder.pointDown.add(function () {
-	});
-	rudder.pointMove.add(function (ev) {
-		if (starting_countdown.play_status.phase != 3) return;
-		rudder.tag.x += ev.prevDelta.x;
-		var x = rudder.tag.x;
-		x = (x >= rudder.tag.range[0] ? x : rudder.tag.range[0]);
-		x = (x <= rudder.tag.range[1] ? x : rudder.tag.range[1]);
-		rudder.tag.value = ((x - rudder.tag.range[0]) / (0.6 * clo.width) - 0.5);
-		rudder.tag.value /= 128;
-		rudder.x = x;
-		send('piece_set_rudder', rudder.tag.player_index, rudder.tag.value);
-		rudder.modified();
-	});
-
-	throttle.pointMove.add(function (ev) {
-		if (starting_countdown.play_status.phase != 3) return;
-		throttle.tag.y += ev.prevDelta.y;
-		var y = throttle.tag.y;
-		y = (y >= throttle.tag.range[0] ? y : throttle.tag.range[0]);
-		y = (y <= throttle.tag.range[1] ? y : throttle.tag.range[1]);
-		throttle.tag.value = -((y - throttle.tag.range[0]) / (0.6 * clo.width) - 0.5);
-		throttle.tag.value /= 2;
-		throttle.y = y;
-		send('piece_set_throttle', throttle.tag.player_index, throttle.tag.value);
-		throttle.modified();
-	});
-
-
+	this.throttle = throttle;
 };
 module.exports.user_interface = user_interface;
+
+user_interface.prototype.set_default = function () {
+	this.rudder.x = this.opp.tag.initial.rudder_x;
+	this.throttle.y = this.opp.tag.initial.throttle_y;
+	this.rudder.modified();
+	this.throttle.modified();
+	this.set_line_message('');
+};
+
+user_interface.prototype.set_viewer_player_index = function (index) {
+	if (index === undefined) index = -1;
+	if (index !== -1) {
+		this.rudder.pointMove.add(this.rudder.tag.rudder_move);
+		this.throttle.pointMove.add(this.throttle.tag.throttle_move);
+		this.opp.show();
+	}
+	else {
+		this.opp.hide();
+		if (this.rudder.pointMove.contains(this.rudder.tag.rudder_move)) this.rudder.pointMove.remove(this.rudder.tag.rudder_move);
+		if (this.throttle.pointMove.contains(this.throttle.tag.throttle_move)) this.throttle.pointMove.remove(this.throttle.tag.throttle_move);
+	}
+};
 
 user_interface.prototype.set_line_message = function (text) {
 	this.line_text.text = text;
 	this.line_text.invalidate();
 };
-
 
 function send(function_name, player_index, value) {
 	var mes = {

@@ -144,15 +144,104 @@
 			"path": "script/self/font.js",
 			"global": true
 		},
-		"starting_countdown": {
-			"type": "script",
-			"path": "script/self/starting_countdown.js",
-			"global": true
-		},
 		"dialog": {
 			"type": "script",
 			"path": "script/self/dialog.js",
 			"global": true
+		},
+		"game_manager": {
+			"type": "script",
+			"path": "script/self/game_manager.js",
+			"global": true
+		},
+		"layout": {
+			"type": "script",
+			"path": "script/layout.js",
+			"global": true
+		},
+		"item_icons": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/item_icons.png"
+		},
+		"info_girl1_info_girl1_go2": {
+			"type": "audio",
+			"path": "audio/info_girl1_info_girl1_go2",
+			"systemId": "sound",
+			"duration": 1289
+		},
+		"info_girl1_info_girl1_goal1": {
+			"type": "audio",
+			"path": "audio/info_girl1_info_girl1_goal1",
+			"systemId": "sound",
+			"duration": 1430
+		},
+		"info_girl1_info_girl1_ready1": {
+			"type": "audio",
+			"path": "audio/info_girl1_info_girl1_ready1",
+			"systemId": "sound",
+			"duration": 1686
+		},
+		"info_girl1_info_girl1_stop1": {
+			"type": "audio",
+			"path": "audio/info_girl1_info_girl1_stop1",
+			"systemId": "sound",
+			"duration": 1013
+		},
+		"info_girl1_info_girl1_timeup2": {
+			"type": "audio",
+			"path": "audio/info_girl1_info_girl1_timeup2",
+			"systemId": "sound",
+			"duration": 1779
+		},
+		"people_people_stadium_cheer1": {
+			"type": "audio",
+			"path": "audio/people_people_stadium_cheer1",
+			"systemId": "sound",
+			"duration": 4779
+		},
+		"jump1": {
+			"type": "audio",
+			"path": "audio/jump1",
+			"systemId": "sound",
+			"duration": 1105
+		},
+		"decision3": {
+			"type": "audio",
+			"path": "audio/decision3",
+			"systemId": "sound",
+			"duration": 1487
+		},
+		"decision9": {
+			"type": "audio",
+			"path": "audio/decision9",
+			"systemId": "sound",
+			"duration": 1228
+		},
+		"nc97718": {
+			"type": "audio",
+			"path": "audio/nc97718",
+			"systemId": "music",
+			"duration": 23995
+		},
+		"nc10333": {
+			"type": "audio",
+			"path": "audio/nc10333",
+			"systemId": "music",
+			"duration": 256941
+		},
+		"info_girl1_info_girl1_zyunbihaiikana1": {
+			"type": "audio",
+			"path": "audio/info_girl1_info_girl1_zyunbihaiikana1",
+			"systemId": "sound",
+			"duration": 1598
+		},
+		"line_girl1_line_girl1_kekkawohappyoushimasu1": {
+			"type": "audio",
+			"path": "audio/line_girl1_line_girl1_kekkawohappyoushimasu1",
+			"systemId": "sound",
+			"duration": 1336
 		}
 	},
 	"environment": {

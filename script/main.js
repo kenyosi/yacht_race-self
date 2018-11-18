@@ -13,9 +13,9 @@ var self_view = {
 	width:conf.yacht.width,
 	height:conf.yacht.height,
 	speed: 0*+1.25*8,
-	direction: 0*0.3,
-	rudder: 0*0.01, // approximate
-	throttle: 0.00,
+	direction: 0.0,
+	rudder: 0.0,
+	throttle: 0.0,
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,239 +24,136 @@ var race                       = require('./race');
 var piece                      = require('./piece');
 var op                         = require('./operation');
 // var set_inital_locations       = require('./set_initial_locations');
-var starting_countdown         = require('./self/starting_countdown');
+var game_manager               = require('./self/game_manager');
 var wm                         = require('./self/window_manager');
 // var local_scene                = require('./self/local_scene');
 // var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
 var dd = [];
 var lpv = {x: 0, y: 0};
-var pop;
+// var pop;
 // var cs = conf.cell.array;
 // var csm1 = conf.cell.unit_m1;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports.self_view = self_view;
 module.exports.dd = dd;
-module.exports.pop = pop;
+// module.exports.pop = pop;
 module.exports.lpv = lpv;
-
-function scene_loaded(scene) {
-
-	var ii = -1;
-	while(ii < 2) {
-		// wm.local_scene_player[ii].set_local_zero({x: self_view.x, y: self_view.y});
-		// wm.local_scene_player[ii].set_angle(self_view.direction * two_pi_to_360);
-		// wm.local_scene_player[ii].set_local_scene();
-		ii++;
-	}
-	// local plan view
-	var pa = new g.Pane({
-		scene: scene,
-		x: conf.local.area.x,
-		y: conf.local.area.y,
-		width: conf.local.area.width,
-		height: conf.local.area.height,
-	});
-	scene.append(pa);
-	lpv = new g.E({
-		scene: scene,
-		x: conf.local.area.x,
-		y: conf.local.area.y,
-		width: conf.local.area.width,
-		height: conf.local.area.height,
-		angle: 0,
-		scaleX: 0.125,
-		scaleY: 0.125,
-		touchable: true,
-	});
-	pa.append(lpv);
-	starting_countdown.set_lpv(lpv);
-
-	// check area
-	var check_area = [];
-	var details = {
-		local_scene: lpv,
-		x: 500,
-		y: 0,
-		width: 500,
-		height: 500,
-		speed: 0,
-		direction: 0,
-		rudder: 0,
-		throttle: 0,
-		player_index: -1,
-		status_index: 2,
-		name: 'チェック1',
-		piece: {
-			scene: scene,
-			// src: scene.assets['boat_simple'],
-			opacity: 1.0,
-			width: conf.yacht.width,
-			height: conf.yacht.height,
-			srcX: conf.yacht.other.srcX,
-			srcY: conf.yacht.other.srcY,
-			srcWidth: conf.yacht.width,
-			srcHeight: conf.yacht.height,
-		},
-		initial: {
-			index: 0,
-			piece: 0,
-		},
-	};
-	check_area[0] = new race.check_area(details);
-
-	details = {
-		local_scene: lpv,
-		x: 500 + 600,
-		y: 300,
-		width: 500,
-		height: 500,
-		speed: 0,
-		direction: 0,
-		rudder: 0,
-		throttle: 0,
-		player_index: -1,
-		status_index: 1,
-		name: 'チェック2',
-		piece: {
-			scene: scene,
-			// src: scene.assets['boat_simple'],
-			opacity: 1.0,
-			width: conf.yacht.width,
-			height: conf.yacht.height,
-			srcX: conf.yacht.other.srcX,
-			srcY: conf.yacht.other.srcY,
-			srcWidth: conf.yacht.width,
-			srcHeight: conf.yacht.height,
-		},
-		initial: {
-			index: 0,
-			piece: 0,
-		},
-	};
-	check_area[1] = new race.check_area(details);
-
-	details = {
-		local_scene: lpv,
-		x: 500 + 600 + 600,
-		y: 300 + 600,
-		width: 500,
-		height: 500,
-		speed: 0,
-		direction: 0,
-		rudder: 0,
-		throttle: 0,
-		player_index: -1,
-		status_index: 1,
-		name: 'ゴール',
-		piece: {
-			scene: scene,
-			// src: scene.assets['boat_simple'],
-			opacity: 1.0,
-			width: conf.yacht.width,
-			height: conf.yacht.height,
-			srcX: conf.yacht.other.srcX,
-			srcY: conf.yacht.other.srcY,
-			srcWidth: conf.yacht.width,
-			srcHeight: conf.yacht.height,
-		},
-		initial: {
-			index: 0,
-			piece: 0,
-		},
-	};
-	check_area[2] = new race.check_area(details);
-
-
-	// yachts tentative
-	ii = 0;
-	while(ii < 2) {
-		details = {
-			local_scene: lpv,
-			x: conf.players.window_pointer[ii].x,
-			y: conf.players.window_pointer[ii].y,
-			width: conf.yacht.width,
-			height: conf.yacht.height,
-			speed: 0*4,
-			direction: 0,
-			rudder: 0*4 / 360, // approximate
-			throttle: 0,
-			player_index: ii,
-			piece: {
-				scene: scene,
-				src: scene.assets['boat_simple'],
-				opacity: 1.0,
-				width: conf.yacht.width,
-				height: conf.yacht.height,
-				srcX: conf.yacht.other.srcX,
-				srcY: conf.yacht.other.srcY,
-				srcWidth: conf.yacht.width,
-				srcHeight: conf.yacht.height,
-			},
-			initial: {
-				index: ii,
-				piece: 0,
-			},
-		};
-		dd[ii] = new piece.yacht(details);
-		dd[ii].set_player_index(ii);
-		dd[ii].set_view_player_index(2);
-		ii++;
-	}
-
-	var test = new starting_countdown.joining();
-	var check_index = 0;
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	var cv0 = [
-		conf.local.area.x + conf.local.area.width / 2,
-		conf.local.area.y + conf.local.area.height / 2
-	];
-	var in_goal = false;
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Create window manager
-	scene.setTimeout(function() {wm.create();}, 100);
-
-	scene.update.add(function() {
-		if (dd[2] === undefined) return;
-		if (dd[2].player_index < 0) return; // <- tantative
-		var xy = {
-			x: dd[2].group.tag.global.x + dd[2].group.tag.global.width / 2,
-			y: dd[2].group.tag.global.y + dd[2].group.tag.global.height / 2,
-			width: dd[2].group.tag.global.width,
-			height: dd[2].group.tag.global.height,
-		};
-		lpv.x = -(xy.x - cv0[0])/8;
-		lpv.y = -(xy.y - cv0[1])/8;
-		if (in_goal) return;
-		if (check_area[check_index].validate(dd[2])) {
-			var t = g.game.age - starting_countdown.play_status.starting_age;
-			starting_countdown.pop.set_line_message('チェックタイム: ' + t);
-			check_area[check_index].set_status(3);
-			check_index++;
-			if (check_index >= check_area.length) {
-				starting_countdown.pop.set_line_message('ゴールタイム: ' + t);
-				in_goal = true;
-				return;
-			}
-			check_area[check_index].set_status(2);
-		}
-	});
-
-
-}
 
 function main() {
 	wm.init();
 	var scene = new g.Scene({game: g.game, assetIds:
-		['boat_simple', 'reversi_disk', 'window_manager_icons', 'help_screen', 'help_screen_solo']
+		['boat_simple', 'item_icons', 'reversi_disk', 'window_manager_icons', 'help_screen', 'help_screen_solo',
+			'jump1', 'info_girl1_info_girl1_go2', 'info_girl1_info_girl1_goal1', 'info_girl1_info_girl1_ready1',
+			'info_girl1_info_girl1_stop1', 'info_girl1_info_girl1_timeup2', 'people_people_stadium_cheer1',
+			'info_girl1_info_girl1_zyunbihaiikana1', 'line_girl1_line_girl1_kekkawohappyoushimasu1', 
+			'decision3', 'decision9', 'nc97718', 'nc10333']
 	});
-	wm.set_scene(scene);
 	race.set_scene(scene);
 	piece.set_scene(scene);
 	op.set_scene(scene);
-	starting_countdown.set_scene(scene);
-	scene.loaded.add(function () {scene_loaded(scene);});
+	wm.set_scene(scene);
+	game_manager.set_scene(scene);
+	scene.loaded.add(function () {
+		// local plan view
+		var pa = new g.Pane({
+			scene: scene,
+			x: conf.local.area.x,
+			y: conf.local.area.y,
+			width: conf.local.area.width,
+			height: conf.local.area.height,
+			touchable: true,
+		});
+		scene.append(pa);
+		var scale = {x: 0.125, y: 0.125, ix: 8.0, iy: 8.0};
+		// lpv = new g.E({
+		lpv = new g.FilledRect({
+			scene: scene,
+			// x: conf.local.area.x,
+			// y: conf.local.area.y,
+			// width: conf.local.area.width,
+			// height: conf.local.area.height,
+			x: 0, // + conf.local.area.width * (1.0 - scale.ix) / 2.0,
+			y: 0,
+			// x: -3*conf.local.area.width ,
+			// y: conf.local.area.y + conf.local.area.height * (1.0 - scale.iy) / 2.0,
+			width: conf.local.area.width *7,
+			// width: conf.local.area.width * scale.ix,
+			height: conf.local.area.height * 7,
+			angle: 0,
+			scaleX: scale.x,
+			scaleY: scale.y,
+			touchable: true,
+			cssColor: '#AAAAAA'
+		});
+		pa.append(lpv);
+		// console.log(lpv);
+		lpv.pointUp.add(function (ev) {
+			// console.log(game_manager.dd);
+			scene.assets['jump1'].play();
+			var x = ev.point.x - 15.5;
+			var y = ev.point.y - 15.5;
+			var ii = 0;
+			while(ii < game_manager.dd.length) {
+				var dx = game_manager.dd[ii].group.tag.global.center_x - x;
+				var dy = game_manager.dd[ii].group.tag.global.center_y - y;
+				var dxy = dx * dx + dy * dy;
+				var force = 100000 / dxy;
+
+				var deg = Math.atan2(dy, dx);
+				var ddeg = deg - game_manager.dd[ii].group.tag.global.direction;
+				force *= Math.cos(ddeg);
+				// console.log(dxy);
+				// console.log(force);
+				game_manager.dd[ii].group.tag.global.speed += force;
+				// console.log(dx);
+				// console.log(dy);
+				ii++;
+			}
+
+			var sprite = new g.Sprite({
+				scene: scene,
+				src: scene.assets['item_icons'],
+				opacity: 1.0,
+				x: x,
+				y: y,
+				height: 64,
+				width: 64,
+				angle: 0,
+				srcX: 0,
+				srcY: 0,
+				srcHeight: 64,
+				srcWidth: 64,
+				scaleX: 1,
+				scaleY: 1,
+			});
+			lpv.append(sprite);
+			sprite.update.add(function () {
+				sprite.opacity -= 0.025;
+				if (sprite.opacity <= 0.0) {
+					sprite.destroy();
+					return;
+				}
+				// console.log('up lpv');
+				sprite.scaleX += 0.25;
+				sprite.scaleY += 0.25;
+				sprite.modified();
+			});
+
+			// console.log('up lpv');
+			// console.log(ev);
+		});
+		// pa.pointDown.add(function () {
+		// 	console.log('down pa');
+		// });
+		game_manager.init_game(lpv);
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Create window manager
+		scene.setTimeout(function() {wm.create();}, 100);
+	});
+	// scene.pointDownCapture.add(function (ev) {
+	// 	console.log(ev);
+	// 	console.log(wm.local_scene_player[2]);
+	// });
 	g.game.pushScene(scene);
 }
 module.exports = main;

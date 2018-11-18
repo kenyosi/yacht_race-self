@@ -95,6 +95,12 @@ normal.prototype.set_text = function (p) {
 		tt.x = tt.tag.parent.width / 2.0 - rect_width / 2.0;
 		tt.modified();
 	}
+	for (i = length_p_text; i < this.text.length; i++) {
+		tt = this.text[i];
+		tt.text = '';
+		tt.invalidate();
+		tt.modified();
+	}
 	this.group.tag.callback_function = p.callback_function;
 	this.group.show();
 };

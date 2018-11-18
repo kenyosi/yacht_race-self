@@ -14,7 +14,6 @@ var two_pi_to_360 = 360.0 / (2.0 * Math.PI);
 // Initialization
 var scene;
 // var commenting                 = require('./self/commenting');
-var conf                         = require('./content_config');
 var process                    = require('./self/process');
 var player                     = require('./self/player');
 var pointer                    = require('./self/pointer');
@@ -38,19 +37,24 @@ module.exports.status          = status;
 function set_scene(sc) { scene = sc;}
 module.exports.set_scene = set_scene;
 
-// var global_player_index = -1;
 var yacht = function (details) {
 	this.view_player_index = -1;
 	this.player_index = details.player_index;
 	this.global_p = {
 		x: details.x,
 		y: details.y,
+		center_x: details.x + details.width / 2,
+		center_y: details.y + details.height / 2,
 		width: details.width,
 		height: details.height,
 		speed: details.speed,
 		direction: details.direction,
 		rudder: details.rudder,
 		throttle: details.throttle,
+		score: {
+			time: undefined,
+			n_dollar: 0,
+		},
 	};
 	var local_p = wm.local_scene_player[this.view_player_index].rect_forward_init(this.global_p);
 	var local_scene = wm.local_scene_player[this.view_player_index];
@@ -86,17 +90,16 @@ var yacht = function (details) {
 	this.entity_index = scene.children.length - 1;
 	piece_p[details.player_index] = this;
 
-	group.update.add(function() {
+	group.update.add(function yacht_update() {
 		group.tag.global.speed += group.tag.global.throttle;
-		if (Math.abs(group.tag.global.speed) <= 0.005) return;
-		// console.log(group.tag.global.speed);
+		// if (Math.abs(group.tag.global.speed) <= 0.005) return;
 		group.tag.global.x += (group.tag.global.speed * Math.cos(group.tag.global.direction));
 		group.tag.global.y += (group.tag.global.speed * Math.sin(group.tag.global.direction));
-		// console.log(group.tag.global.rudder);
 		group.tag.global.direction += group.tag.global.rudder * group.tag.global.speed;
 		group.tag.global.speed *= (1 - conf.const.friction - 2*Math.abs(group.tag.global.rudder));
-		// console.log(group.tag.global.speed);
 		var xy_l = wm.local_scene_player[2].rect_forward_init(group.tag.global);
+		group.tag.global.center_x = xy_l.center_x;
+		group.tag.global.center_y = xy_l.center_y;
 		if (group.tag.initial.index == 2) {
 			// console.log(xy_l);
 		}
@@ -123,7 +126,9 @@ var yacht = function (details) {
 			width: details.width,
 			height: details.height,
 		}));
-	group.append(new g.Sprite(details.piece));
+	var shape = new g.Sprite(details.piece);
+	group.append(shape);
+	this.shape = shape;
 	// group.angle += 90;
 	// group.modified();
 
@@ -139,15 +144,24 @@ yacht.prototype.set_view_player_index = function (view_player_index) {
 	this.view_player_index = view_player_index;
 	this.group.tag.view_player_index = view_player_index;
 	if (this.player_index === this.view_player_index) {
-		this.group.children[1].srcX = conf.yacht.self.srcX;
-		this.group.children[1].srcY = conf.yacht.self.srcY;
+		this.shape.srcX = conf.yacht.self.srcX;
+		this.shape.srcY = conf.yacht.self.srcY;
 	}
 	else {
-		this.group.children[1].srcX = conf.yacht.other.srcX;
-		this.group.children[1].srcY = conf.yacht.other.srcY;
+		this.shape.srcX = conf.yacht.other.srcX;
+		this.shape.srcY = conf.yacht.other.srcY;
 	}
+	this.group.modified();
 
 };
+
+yacht.prototype.set_plain_yacht = function () {
+	this.group.tag.global.score = {
+		time: undefined,
+		n_dollar: 0,
+	};
+};
+
 
 yacht.prototype.set_rudder = function (value) {
 	var group =this.group;
@@ -161,22 +175,35 @@ function set_pile_areas(p) {
 module.exports.set_pile_areas = set_pile_areas;
 
 function set_rudder(mes) {
-	// console.log(mes);
 	var player_index = mes.data.player_index;
 	var rudder = mes.data.value;
-	// console.log(piece_p);
 	piece_p[player_index].group.tag.global.rudder = rudder;
 }
 module.exports.set_rudder = set_rudder;
 
 function set_throttle(mes) {
-	// console.log(mes);
 	var player_index = mes.data.player_index;
 	var throttle = mes.data.value;
-	// console.log(piece_p);
 	piece_p[player_index].group.tag.global.throttle = throttle;
 }
 module.exports.set_throttle = set_throttle;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 var boundary = function (object) {
 	this.width = object.width;

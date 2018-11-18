@@ -2,12 +2,9 @@
  * Check point
  * yacht_race@self, Akashic content
  */
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuration
-// var conf                       = require('./content_config');
+var conf                       = require('./content_config');
 
 var check_point_status = [
 	{status: 'observer',    cssColor: '#AAAAAA', label: 'チェック'},
@@ -16,13 +13,43 @@ var check_point_status = [
 	{status: 'completed',   cssColor: '#00FF00', label: '完了'},
 ];
 
+var default_check_area = {
+	local_scene: undefined,
+	x: 0,
+	y: 0,
+	name: 'チェック',
+	width: 500,
+	height: 500,
+	speed: 0,
+	direction: 0,
+	rudder: 0,
+	throttle: 0,
+	player_index: -1,
+	status_index: 1, // tentative one
+	piece: {
+		scene: scene,
+		// src: scene.assets['boat_simple'],
+		opacity: 1.0,
+		width: conf.yacht.width,
+		height: conf.yacht.height,
+		srcX: conf.yacht.other.srcX,
+		srcY: conf.yacht.other.srcY,
+		srcWidth: conf.yacht.width,
+		srcHeight: conf.yacht.height,
+	},
+	initial: {
+		index: 0,
+		piece: 0,
+	},
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 var font                       = require('./self/font');
 var scene;
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+module.exports.default_check_area = default_check_area;
 function set_scene(sc) { scene = sc;}
 module.exports.set_scene = set_scene;
 
@@ -40,6 +67,7 @@ var check_area = function (details) {
 		rudder: details.rudder,
 		throttle: details.throttle,
 		name: details.name,
+		n_dollar: details.n_dollar,
 	};
 	var group = new g.E({
 		scene: scene,
