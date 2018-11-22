@@ -86,10 +86,11 @@ function main() {
 			cssColor: '#AAAAAA'
 		});
 		pa.append(lpv);
-		// console.log(lpv);
 		lpv.pointUp.add(function (ev) {
-			// console.log(game_manager.dd);
-			scene.assets['jump1'].play();
+			var se = new g.SoundAudioSystem('se', g.game);
+			var se_player = se.createPlayer();
+			se_player.changeVolume(conf.audio.se.volume);
+			se_player.play(scene.assets.jump1);
 			var x = ev.point.x - 15.5;
 			var y = ev.point.y - 15.5;
 			var ii = 0;

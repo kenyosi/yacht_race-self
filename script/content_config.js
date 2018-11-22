@@ -137,6 +137,18 @@ module.exports.game_icon = game_icon;
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Common, @self
 ////////////////////////////////////////////////////////////////////////////////////////////
+// Audio
+var audio = {
+	bgm: {
+		volume: 0.10,
+		play: 'nc10333',
+		util: 'nc97718',
+	},
+	se: {volume: 0.20,},
+	voice: {volume: 0.6},
+};
+module.exports.audio = audio;
+
 // Local scene
 var local_feature = false;
 var local = {
@@ -158,6 +170,8 @@ module.exports.local = local;
 // Players
 module.exports.players = {
 	max_players: 2,
+	max_sync_players: 2,
+	max_async_players: 1000,
 	admin : [true, false, false, false],
 	default: [
 		{id: '-9999', name: '', head: 'Player1: 参加中', timestamp: constant.old_unix_time, time_warning: 0, player_plate: 0, player_plate_status: 0, login: false, group: 'admin'},

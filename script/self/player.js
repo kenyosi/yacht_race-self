@@ -15,7 +15,7 @@ var current                    = [// intend deep copy, and avoid reference copy
 	{
 		id: '-9999',
 		name: '',
-		head: 'P1: 参加中',
+		head: '',
 		timestamp: conf.const.old_unix_time,
 		time_warning: 0,
 		player_plate: 0,
@@ -24,8 +24,8 @@ var current                    = [// intend deep copy, and avoid reference copy
 		group: 'admin'
 	},];
 var validate_index = [
-	{st: 0, en: conf.players.max_players}, // player 1, player 2, and player 3
-	{st: 0, en: 1},                        // player 1 only
+	// {st: 0, en: conf.players.max_players}, // player 1, player 2, and player 3
+	{st: 0, en: conf.players.max_async_players},
 	{st: 1, en: 2},                        // player 2 only
 	{st: 2, en: 3},                        // player 3 only
 ];
@@ -38,12 +38,12 @@ while (ii < conf.players.max_players) {
 	status_bar_messages[ii] = 'あなたは' + head[ii] + 'です';
 	ii++;
 }
-ii = 1;
-while (ii < conf.players.max_players) {
-	current [ii]            = {id: '-9999', name: '', head: head[ii] + ': 募集します', timestamp: conf.const.old_unix_time, time_warning: 0, player_plate: 0, player_plate_status: 0, login: false, group: 'user'},
-	validate_index[ii + 1]  = {st: ii - 1, en: ii};
-	ii++;
-}
+// ii = 1;
+// while (ii < conf.players.max_players) {
+// 	current [ii]            = {id: '-9999', name: '', head: head[ii] + ': 募集します', timestamp: conf.const.old_unix_time, time_warning: 0, player_plate: 0, player_plate_status: 0, login: false, group: 'user'},
+// 	validate_index[ii + 1]  = {st: ii - 1, en: ii};
+// 	ii++;
+// }
 var caster ={join_event: false};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,10 +166,9 @@ function validate_join(player, ci) {
 	while (ii < validate_index[ci].en) {
 		if (!f[ii]) { // joined a new player by timestamp
 			current[ii] = new_propoeties(player, ii, current_time);
-			pointer.update_by_operation('on', ii, undefined);
+			// pointer.update_by_operation('on', ii, undefined);
 			wm.update_common_style('on', conf.window_icon.login, wm.login_controls[ii]);
 			wm.status_bottom.set_message(status_bar_messages[ii], ii);
-			// commenting.post('Player' + wm.index_pp[ii] + 'は' + current[ii].name.substr(0, 2) + 'さんです');
 			commenting.post('P' + wm.index_pp[ii] + 'が着席しました');
 			return true;
 		}
@@ -178,6 +177,45 @@ function validate_join(player, ci) {
 	return false;
 }
 module.exports.validate_join = validate_join;
+
+// Expensive part, should carefuley code this function, Ken Y.
+function join(player, ci) {
+	if (player.id === undefined) return false;
+	ci = (ci === undefined ? 0 : ci);
+	var current_time = g.game.age;
+	var f = [];
+	var ii = validate_index[ci].st;
+	while (ii < validate_index[ci].en) {
+		f[ii] = (current_time - current[ii].timestamp <=  conf.players.time.life || current[ii].group == 'admin');
+		if (current[ii].id == player.id) { // validate an existing player
+			if (f[ii]) {
+				current[ii].timestamp = current_time;
+				current[ii].time_warning = 0;
+				return ii;
+			}
+		}
+		ii++;
+	}
+	ii = validate_index[ci].st;
+	while (ii < validate_index[ci].en) {
+		if (!f[ii]) { // joined a new player by timestamp
+			current[ii] = new_propoeties(player, ii, current_time);
+			// pointer.update_by_operation('on', ii, undefined);
+			wm.update_common_style('on', conf.window_icon.login, wm.login_controls[ii]);
+			wm.status_bottom.set_message(status_bar_messages[ii], ii);
+			commenting.post('P' + wm.index_pp[ii] + 'が着席しました');
+			return ii;
+		}
+		ii++;
+	}
+	return -1;
+}
+module.exports.join = join;
+
+
+
+
+
 
 function find_index(id, ci) {
 	// return 0;
@@ -221,10 +259,12 @@ module.exports.get_group = get_group;
 
 
 function new_propoeties(player, player_index, timestamp) {
+	var ip = (player_index + 1).toString();
+	var head = 'P' + ip;
 	return {
 		id: player.id,
-		name: head[player_index],
-		head: head[player_index] + ': 参加中',
+		name: head,
+		head: head,
 		timestamp: timestamp,
 		time_warning: conf.players.default[player_index].time_warning,
 		player_plate: conf.players.default[player_index].player_plate,

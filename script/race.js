@@ -25,10 +25,11 @@ var default_check_area = {
 	rudder: 0,
 	throttle: 0,
 	player_index: -1,
+	view_player_index: -1,
 	status_index: 1, // tentative one
 	piece: {
 		scene: scene,
-		// src: scene.assets['boat_simple'],
+		// src: scene.assets['check_point'],
 		opacity: 1.0,
 		width: conf.yacht.width,
 		height: conf.yacht.height,
@@ -55,7 +56,8 @@ module.exports.set_scene = set_scene;
 
 var check_area = function (details) {
 	this.view_player_index = -1;
-	this.player_index = details.player_index;
+	// this.player_index = details.player_index;
+	this.player_index = -1;
 	this.global_p = {
 		x: details.x,
 		y: details.y,
@@ -79,6 +81,7 @@ var check_area = function (details) {
 		scaleX: 1.0,
 		scaleY: 1.0,
 		touchable: false,
+		// local: true,
 		tag: {
 			type: 'check_point',
 			player_index: this.player_index,
@@ -147,4 +150,3 @@ check_area.prototype.validate = function (piece) {
 	if (piece.group.y < this.group.y | piece.group.y >= this.group.y + this.group.height) return false;
 	return true;
 };
-

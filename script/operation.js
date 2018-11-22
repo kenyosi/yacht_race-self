@@ -109,7 +109,7 @@ var user_interface = function (details) {
 			player_index: details.player_index,
 			rudder_move: 
 				function rudder_move(ev) {
-					if (game_manager.play_status.phase != 5) return;
+					if (game_manager.play_status.phase != 4 && game_manager.play_status.phase != 9) return;
 					rudder.tag.x += ev.prevDelta.x;
 					var x = rudder.tag.x;
 					x = (x >= rudder.tag.range[0] ? x : rudder.tag.range[0]);
@@ -152,7 +152,7 @@ var user_interface = function (details) {
 			player_index: details.player_index,
 			throttle_move:
 				function throttle_move(ev) {
-					if (game_manager.play_status.phase != 5) return;
+					if (game_manager.play_status.phase != 4 && game_manager.play_status.phase != 9) return;
 					throttle.tag.y += ev.prevDelta.y;
 					var y = throttle.tag.y;
 					y = (y >= throttle.tag.range[0] ? y : throttle.tag.range[0]);
@@ -178,8 +178,15 @@ user_interface.prototype.set_default = function () {
 	this.set_line_message('');
 };
 
+user_interface.prototype.set_player_index = function (index) {
+	this.player_index = index;
+	this.throttle.tag.player_index = index;
+	this.rudder.tag.player_index = index;
+};
+
 user_interface.prototype.set_viewer_player_index = function (index) {
 	if (index === undefined) index = -1;
+	this.viewer_player_index = index;
 	if (index !== -1) {
 		this.rudder.pointMove.add(this.rudder.tag.rudder_move);
 		this.throttle.pointMove.add(this.throttle.tag.throttle_move);
