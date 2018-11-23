@@ -19,11 +19,11 @@ var normal = function (p) {
 	this.confirmed = false;
 	// common parts
 	var d_width = 0.6 * g.game.width;
-	var d_height = 0.6 * g.game.height;
+	var d_height = 0.8 * g.game.height;
 	var group = new g.E({
 		scene: scene,
 		x: 0.2 * g.game.width,
-		y: 0.2 * g.game.height,
+		y: 0.1 * g.game.height,
 		width: d_width,
 		height: d_height,
 		scaleX: 1,
@@ -35,6 +35,7 @@ var normal = function (p) {
 			callback_function: p.callback_function,
 		},
 		hidden: false,
+		local:true,
 	});
 	this.group = group;
 	scene.append(group);
@@ -46,6 +47,7 @@ var normal = function (p) {
 		width: d_width,
 		height: d_height,
 		touchable: true,
+		local:true,
 		tag: {
 			parent: group,
 		}

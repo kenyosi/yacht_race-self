@@ -26,18 +26,14 @@ function set_scene(sc) {
 		game_manager_elimination_start_async_timer: game_manager.elimination_start_async_timer,
 		game_manager_elimination_after_goal: game_manager.elimination_after_goal,
 		game_manager_elimination_game_set: game_manager.elimination_game_set,
-		// game_manager_sync_timer: game_manager.sync_timer,
 		game_manager_game_start_sync_count_down: game_manager.game_start_sync_count_down,
 		game_manager_game_set: game_manager.game_set,
-		// piece_other_local_down: piece.other_local_down,
-		// piece_other_local_move: piece.other_local_move,
-		// piece_other_local_up: piece.other_local_up,
 		pointer_other_local_down: pointer.other_local_down,
 		pointer_other_local_move: pointer.other_local_move,
 		pointer_other_local_up: pointer.other_local_up,
 		eval_function: eval_function,
 	};
-	scene.message.add(function(mes) {
+	scene.message.add(function event_manager(mes) {
 		try {
 			// console.log(mes);
 			if (mes === undefined) return;

@@ -22,6 +22,11 @@ var voice_player = voice.createPlayer();
 var audience = new g.SoundAudioSystem('audience', g.game);
 var audience_player = audience.createPlayer();
 
+// g.game.leave.add(function () {
+// 	bgm.stop();
+// });
+var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
+
 var starting_dialog;
 var play_status = {
 	// 0: configure game
@@ -148,6 +153,13 @@ function init_game (p) {
 			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*3, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
 		],
 		callback_function: undefined,
 	};
@@ -158,6 +170,7 @@ function init_game (p) {
 module.exports.init_game = init_game;
 
 function configure_game () {
+	console.log(scene);
 	play_status.phase = 0;
 	lpv.x = initial_lpv.x; //<---
 	lpv.y = initial_lpv.y; //<---
@@ -176,10 +189,17 @@ function configure_game () {
 	piece.set_initial_operation();
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: 'ゲーム設定'},
-			{x: 4, y:  14 + 18*1, font_size: 16, s: 'ノーマル'},
-			{x: 4, y:  14 + 18*2, font_size: 16, s: 'タップすると選手を受付けます'},
-			{x: 4, y:  14 + 18*3, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: 'ヨットレース'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*2, font_size: 16, s: '選手になってゴールを目指します'},
+			{x: 4, y:  14 + 18*3, font_size: 16, s: '予選と本選が1サイクルです'},
+			{x: 4, y:  14 + 18*4, font_size: 16, s: '予選は誰でも参加できます'},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: '上位' + conf.players.max_sync_players +'名が本戦に出ます'},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: '本選のスタートは予選のタイム順に並びます'},
+			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*8, font_size: 16, s: '出場しなくても楽しめます'},
+			{x: 4, y:  14 + 18*9, font_size: 16, s: 'どの選手が勝つのか賭けることができます'},
+			{x: 4, y:  14 + 18*10, font_size: 16, s: '風を起こし選手のヨットを操作できます'},
 		],
 		callback_function: register_game,
 	};
@@ -214,7 +234,9 @@ function elimination_start_async() {
 	se_player.play(scene.assets.decision3);
 	pop.set_default();
 	pop.set_player_index(player_index);
-	pop.set_viewer_player_index(view_player_index);
+	pop.set_view_player_index(view_player_index);
+	pop.set_piece_index(piece_index);
+	pop.set_view_piece_index(view_piece_index);
 	dd[piece_index].set_player_index(player_index);
 	dd[piece_index].set_view_player_index(view_player_index);
 	var q = {
@@ -283,7 +305,6 @@ module.exports.elimination_start_async_timer = elimination_start_async_timer;
 
 function game_timeout() {
 	var n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
-	// console.log('game_timeout');
 	var mes = {
 		data: {
 			destination: piece_handler_destination,
@@ -368,7 +389,7 @@ function bidding_game(mes) {
 
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: '結果'},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: '結果と賭けの対象の表示(TBD)'},
 			{x: 4, y:  14 + 18*1, font_size: 16, s: '1位...'},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: '2位...'},
 		],
@@ -380,10 +401,48 @@ module.exports.bidding_game =  bidding_game;
 
 function game_matching(mes) {
 	play_status.phase = 8;
+	// view_player_index = player_index;
+
+	// // re-address piece index here
+	// piece_index = player_index;
+	// view_piece_index = view_player_index;
+	// wm.local_scene_player[piece_index].set_local_scene();
+
+	// piece_handler_destination = 'game_manager_after_goal';
+	// scene.update.add(view_piece_handler);
+	// scene.update.add(piece_handler);
+
+	// pop.set_default();
+	// pop.set_player_index(player_index);
+	// pop.set_view_player_index(view_player_index);
+	// pop.set_piece_index(piece_index);
+	// pop.set_view_piece_index(view_piece_index);
+
+	// var ii = 0;
+	// while(ii < conf.players.max_sync_players)  {
+	// 	dd[ii].set_player_index(ii);
+	// 	dd[ii].set_view_player_index(ii);
+	// 	++ii;
+	// }
+
+	// sync this timer over players
+	if (player_index !== 0) return;
+	// scene.message.fire({data: { /* doesn't work */ }});
+	bcast_message_event.data = {
+		destination: 'game_manager_game_start_sync_count_down',
+		starting_age: g.game.age + g.game.fps * 6,
+		ending_age: g.game.age + g.game.fps * (5 + 60), // tentative number
+	};
+	g.game.raiseEvent(bcast_message_event);
+}
+
+function game_start_sync_count_down(mes) {
+	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
+
 	view_player_index = player_index;
 
 	// re-address piece index here
-	piece_index = view_player_index;
+	piece_index = player_index;
 	view_piece_index = view_player_index;
 	wm.local_scene_player[piece_index].set_local_scene();
 
@@ -393,24 +452,17 @@ function game_matching(mes) {
 
 	pop.set_default();
 	pop.set_player_index(player_index);
-	pop.set_viewer_player_index(view_player_index);
-	dd[piece_index].set_player_index(player_index);
-	dd[piece_index].set_view_player_index(view_player_index);
+	pop.set_view_player_index(view_player_index);
+	pop.set_piece_index(piece_index);
+	pop.set_view_piece_index(view_piece_index);
 
-	// sync this timer over players
-	if (player_index !== 0) return;
-	scene.message.fire({
-		data: {
-			destination: 'game_manager_game_start_sync_count_down',
-			starting_age: g.game.age + g.game.fps * 6,
-			ending_age: g.game.age + g.game.fps * (5 + 60), // tentative number
-		}
-	});
-}
-// module.exports.game_matching = game_matching;
+	var ii = 0;
+	while(ii < conf.players.max_sync_players)  {
+		dd[ii].set_player_index(ii);
+		dd[ii].set_view_player_index(view_player_index);
+		++ii;
+	}
 
-function game_start_sync_count_down(mes) {
-	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	play_status.starting_age = mes.data.starting_age;
 	play_status.ending_age   = mes.data.ending_age;
 	var q = {
@@ -504,10 +556,8 @@ function game_result(mes) {
 		],
 		callback_function: result_balance,
 	};
-		// will code login, here
 	play_status.match++;
 	starting_dialog.set_text(q);
-	// starting_dialog.group.show();
 }
 module.exports.game_set = game_set;
 

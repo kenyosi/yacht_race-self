@@ -179,13 +179,12 @@ function validate_join(player, ci) {
 module.exports.validate_join = validate_join;
 
 // Expensive part, should carefuley code this function, Ken Y.
-function join(player, ci) {
+function join(player) {
 	if (player.id === undefined) return false;
-	ci = (ci === undefined ? 0 : ci);
 	var current_time = g.game.age;
 	var f = [];
-	var ii = validate_index[ci].st;
-	while (ii < validate_index[ci].en) {
+	var ii = 0;
+	while (ii < current.length) {
 		f[ii] = (current_time - current[ii].timestamp <=  conf.players.time.life || current[ii].group == 'admin');
 		if (current[ii].id == player.id) { // validate an existing player
 			if (f[ii]) {
@@ -196,25 +195,11 @@ function join(player, ci) {
 		}
 		ii++;
 	}
-	ii = validate_index[ci].st;
-	while (ii < validate_index[ci].en) {
-		if (!f[ii]) { // joined a new player by timestamp
-			current[ii] = new_propoeties(player, ii, current_time);
-			// pointer.update_by_operation('on', ii, undefined);
-			wm.update_common_style('on', conf.window_icon.login, wm.login_controls[ii]);
-			wm.status_bottom.set_message(status_bar_messages[ii], ii);
-			commenting.post('P' + wm.index_pp[ii] + 'が着席しました');
-			return ii;
-		}
-		ii++;
-	}
-	return -1;
+	// joins a new player joins by timestamp
+	current[ii] = new_propoeties(player, ii, current_time);
+	return ii;
 }
 module.exports.join = join;
-
-
-
-
 
 
 function find_index(id, ci) {

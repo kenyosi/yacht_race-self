@@ -20,6 +20,7 @@ var game_manager         = require('./self/game_manager');
 // var pointer                    = require('./self/pointer');
 // var wm                         = require('./self/window_manager');
 var font                       = require('./self/font');
+var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function set_scene(sc) { scene = sc;}
@@ -27,8 +28,10 @@ module.exports.set_scene = set_scene;
 
 var user_interface = function (details) {
 	// this.view_player_index = details.player_index; // tentative
-	this.view_player_index = -1; // tentative
 	this.player_index = details.player_index;
+	this.view_player_index = -1; // tentative
+	this.piece_index = details.piece_index,
+	this.view_piece_index = -1; // tentative
 	this.text_message_y      = 0;
 	this.text_message_height = 12;
 	var clo = conf.local.operation;
@@ -44,6 +47,7 @@ var user_interface = function (details) {
 				throttle_y:0.30 * clo.height,
 			},
 		},
+		local: true,
 	});
 	opp.hide();
 	scene.append(opp);
@@ -107,6 +111,7 @@ var user_interface = function (details) {
 			x: 0.45 * clo.width,
 			value: 0.5,
 			player_index: details.player_index,
+			piece_index: details.piece_index,
 			rudder_move: 
 				function rudder_move(ev) {
 					if (game_manager.play_status.phase != 4 && game_manager.play_status.phase != 9) return;
@@ -117,10 +122,11 @@ var user_interface = function (details) {
 					rudder.tag.value = ((x - rudder.tag.range[0]) / (0.6 * clo.width) - 0.5);
 					rudder.tag.value /= 128;
 					rudder.x = x;
-					send('piece_set_rudder', rudder.tag.player_index, rudder.tag.value);
+					send('piece_set_rudder', rudder.tag);
 					rudder.modified();
 				}
-		}
+		},
+		local: true,
 	});
 	operation.append(rudder);
 	this.rudder = rudder;
@@ -150,6 +156,7 @@ var user_interface = function (details) {
 			y: 0.40 * clo.height,
 			value: 0.5,
 			player_index: details.player_index,
+			piece_index: details.piece_index,
 			throttle_move:
 				function throttle_move(ev) {
 					if (game_manager.play_status.phase != 4 && game_manager.play_status.phase != 9) return;
@@ -160,10 +167,11 @@ var user_interface = function (details) {
 					throttle.tag.value = -((y - throttle.tag.range[0]) / (0.6 * clo.width) - 0.5);
 					throttle.tag.value /= 2;
 					throttle.y = y;
-					send('piece_set_throttle', throttle.tag.player_index, throttle.tag.value);
+					send('piece_set_throttle', throttle.tag);
 					throttle.modified();
 				}
-		}
+		},
+		local: true,
 	});
 	operation.append(throttle);
 	this.throttle = throttle;
@@ -184,9 +192,8 @@ user_interface.prototype.set_player_index = function (index) {
 	this.rudder.tag.player_index = index;
 };
 
-user_interface.prototype.set_viewer_player_index = function (index) {
-	if (index === undefined) index = -1;
-	this.viewer_player_index = index;
+user_interface.prototype.set_view_player_index = function (index) {
+	this.view_player_index = index;
 	if (index !== -1) {
 		this.rudder.pointMove.add(this.rudder.tag.rudder_move);
 		this.throttle.pointMove.add(this.throttle.tag.throttle_move);
@@ -199,20 +206,31 @@ user_interface.prototype.set_viewer_player_index = function (index) {
 	}
 };
 
+user_interface.prototype.set_piece_index = function (index) {
+	this.piece_index = index;
+	this.throttle.tag.piece_index = index;
+	this.rudder.tag.piece_index = index;
+};
+
+user_interface.prototype.set_view_piece_index = function (index) {
+	this.view_piece_index = index;
+};
+
 user_interface.prototype.set_line_message = function (text) {
 	this.line_text.text = text;
 	this.line_text.invalidate();
 };
 
-function send(function_name, player_index, value) {
+function send(function_name, op_tag) {
 	var mes = {
-		data: {
-			destination: function_name,
-			player_index: player_index,
-			value: value,
-		}
+		destination: function_name,
+		player_index: op_tag.player_index,
+		piece_index: op_tag.piece_index,
+		value: op_tag.value,
 	};
-	scene.message.fire(mes);
+	bcast_message_event.data = mes;
+	g.game.raiseEvent(bcast_message_event);
+	// scene.message.fire(mes);
 	return mes;
 }
 
