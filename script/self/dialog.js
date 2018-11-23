@@ -18,12 +18,14 @@ module.exports.set_scene = set_scene;
 var normal = function (p) {
 	this.confirmed = false;
 	// common parts
+	var d_width = 0.6 * g.game.width;
+	var d_height = 0.6 * g.game.height;
 	var group = new g.E({
 		scene: scene,
-		x: 0.3 * g.game.width,
-		y: 0.3 * g.game.height,
-		width: 0.4 * g.game.width,
-		height: 0.4 * g.game.height,
+		x: 0.2 * g.game.width,
+		y: 0.2 * g.game.height,
+		width: d_width,
+		height: d_height,
 		scaleX: 1,
 		scaleY: 1,
 		touchable: false,
@@ -41,8 +43,8 @@ var normal = function (p) {
 		scene: scene,
 		cssColor: p.background.cssColor,
 		opacity: p.background.opacity,
-		width: 0.4 * g.game.width,
-		height: 0.4 * g.game.height,
+		width: d_width,
+		height: d_height,
 		touchable: true,
 		tag: {
 			parent: group,
@@ -74,7 +76,6 @@ var normal = function (p) {
 		group.append(tt[i]);
 	}
 	this.text = tt;
-	// common parts
 
 	background.pointDown.add(function () {
 		if (background.tag.parent.tag.callback_function === undefined) return;
@@ -104,4 +105,3 @@ normal.prototype.set_text = function (p) {
 	this.group.tag.callback_function = p.callback_function;
 	this.group.show();
 };
-

@@ -298,7 +298,7 @@ function game_timeout() {
 }
 
 function elimination_after_goal(mes) {
-	if (play_status.phase === 5) return; // avoid goal and timeup
+	if (play_status.phase !== 4) return; // avoid come here twice at goal and timeup 
 	play_status.phase = 5;
 	// bgm_player.stop();
 	var is_goal = (mes.data.score.time === undefined ? false : true);
@@ -349,9 +349,6 @@ function elimination_game_set(mes) {
 }
 module.exports.elimination_game_set =  elimination_game_set;
 
-
-
-
 function bidding_game(mes) {
 	play_status.phase = 7;
 	check_index = 0;
@@ -375,35 +372,47 @@ function bidding_game(mes) {
 			{x: 4, y:  14 + 18*1, font_size: 16, s: '1位...'},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: '2位...'},
 		],
-		callback_function: start_sync_timer,
+		callback_function: game_matching,
 	};
 	starting_dialog.set_text(q);
 }
 module.exports.bidding_game =  bidding_game;
 
-
-function start_sync_timer(mes) {
+function game_matching(mes) {
 	play_status.phase = 8;
-	// bgm_player.stop();
-	// player_index = player.join(g.game.player);// login, here
 	view_player_index = player_index;
-	wm.local_scene_player[view_player_index].set_local_scene();
-	piece_index = elimination_piece_index; // readdress pice index here
-	view_piece_index = elimination_piece_index;
+
+	// re-address piece index here
+	piece_index = view_player_index;
+	view_piece_index = view_player_index;
+	wm.local_scene_player[piece_index].set_local_scene();
 
 	piece_handler_destination = 'game_manager_after_goal';
-
-	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
+	scene.update.add(view_piece_handler);
+	scene.update.add(piece_handler);
 
 	pop.set_default();
 	pop.set_player_index(player_index);
 	pop.set_viewer_player_index(view_player_index);
 	dd[piece_index].set_player_index(player_index);
 	dd[piece_index].set_view_player_index(view_player_index);
-	scene.update.add(view_piece_handler);
-	scene.update.add(piece_handler);
 
+	// sync this timer over players
+	if (player_index !== 0) return;
+	scene.message.fire({
+		data: {
+			destination: 'game_manager_game_start_sync_count_down',
+			starting_age: g.game.age + g.game.fps * 6,
+			ending_age: g.game.age + g.game.fps * (5 + 60), // tentative number
+		}
+	});
+}
+// module.exports.game_matching = game_matching;
 
+function game_start_sync_count_down(mes) {
+	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
+	play_status.starting_age = mes.data.starting_age;
+	play_status.ending_age   = mes.data.ending_age;
 	var q = {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: '本線スタートまで'},
@@ -413,16 +422,8 @@ function start_sync_timer(mes) {
 		callback_function: undefined,
 	};
 	starting_dialog.set_text(q);	
-
-	play_status.starting_age = g.game.age + g.game.fps * 6;
-	play_status.ending_age   = g.game.age + g.game.fps * (5 + 60);// tentative number
-
 	starting_dialog.text[1].update.add(function countdown_timer(){
 		current_count = play_status.starting_age - g.game.age;
-		// if (current_count === (g.game.fps * 3 + 10)) {
-		// 	bgm_player.play(scene.assets[conf.audio.bgm.play]);
-		// 	return;
-		// }
 		if (current_count === (g.game.fps *2 + 10)) {
 			voice_player.play(scene.assets.info_girl1_info_girl1_ready1);
 			return;
@@ -438,12 +439,11 @@ function start_sync_timer(mes) {
 		starting_dialog.group.hide();
 		scene.setTimeout(game_timeout, game_milliseconds);
 	});
-
 }
-module.exports.start_sync_timer = start_sync_timer;
+module.exports.game_start_sync_count_down = game_start_sync_count_down;
 
 function after_goal(mes) {
-	if (play_status.phase === 10) return; // avoid goal and timeup
+	if (play_status.phase !== 9) return; // avoid come here twice at goal and timeup 
 	play_status.phase = 10;
 	// bgm_player.stop();
 	var is_goal = (mes.data.score.time === undefined ? false : true);
