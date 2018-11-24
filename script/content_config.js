@@ -140,12 +140,12 @@ module.exports.game_icon = game_icon;
 // Audio
 var audio = {
 	bgm: {
-		volume: 0.10,
+		volume: 0.08, // 0.10
 		play: 'nc10333',
 		util: 'nc97718',
 	},
-	se: {volume: 0.20,},
-	voice: {volume: 0.6},
+	se: {volume: 0.10,}, // 0.20
+	voice: {volume: 0.4}, // 0.60
 };
 module.exports.audio = audio;
 

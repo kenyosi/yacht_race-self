@@ -19,10 +19,10 @@ var normal = function (p) {
 	this.confirmed = false;
 	// common parts
 	var d_width = 0.6 * g.game.width;
-	var d_height = 0.8 * g.game.height;
+	var d_height = 0.1 * g.game.height; // 0.8
 	var group = new g.E({
 		scene: scene,
-		x: 0.2 * g.game.width,
+		x: 0.1 * g.game.width,
 		y: 0.1 * g.game.height,
 		width: d_width,
 		height: d_height,

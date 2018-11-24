@@ -242,6 +242,16 @@
 			"path": "audio/line_girl1_line_girl1_kekkawohappyoushimasu1",
 			"systemId": "sound",
 			"duration": 1336
+		},
+		"wind": {
+			"type": "script",
+			"path": "script/wind.js",
+			"global": true
+		},
+		"score": {
+			"type": "script",
+			"path": "script/score.js",
+			"global": true
 		}
 	},
 	"environment": {

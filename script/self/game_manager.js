@@ -12,7 +12,10 @@ var game_milliseconds = game_sec * 1000;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
+var score                      = require('../score');
+
 var scene;
+
 var bgm = new g.MusicAudioSystem('bgm', g.game);
 var bgm_player = bgm.createPlayer();
 var se = new g.SoundAudioSystem('se', g.game);
@@ -26,6 +29,9 @@ var audience_player = audience.createPlayer();
 // 	bgm.stop();
 // });
 var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
+
+
+
 
 var starting_dialog;
 var play_status = {
@@ -82,11 +88,16 @@ var initial_lpv = {
 };
 
 var dd = [];
+var score_realtime;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports.play_status = play_status;
 module.exports.dd = dd;
 
-function set_scene(sc) { scene = sc;}
+function set_scene(sc) {
+	scene = sc;
+	score.set_scene(scene);
+	op.set_scene(scene);
+}
 module.exports.set_scene = set_scene;
 function set_op(p) { pop = p;}
 module.exports.set_op = set_op;
@@ -138,7 +149,8 @@ function init_game (p) {
 		ii++;
 	}
 	pop = new op.user_interface(details);
-
+	score_realtime = new score.realtime();
+	score_realtime.pane.show();
 	p = {
 		label: {
 			cssColor: 'black',
@@ -170,7 +182,7 @@ function init_game (p) {
 module.exports.init_game = init_game;
 
 function configure_game () {
-	console.log(scene);
+	// console.log(scene);
 	play_status.phase = 0;
 	lpv.x = initial_lpv.x; //<---
 	lpv.y = initial_lpv.y; //<---
@@ -194,12 +206,12 @@ function configure_game () {
 			{x: 4, y:  14 + 18*2, font_size: 16, s: '選手になってゴールを目指します'},
 			{x: 4, y:  14 + 18*3, font_size: 16, s: '予選と本選が1サイクルです'},
 			{x: 4, y:  14 + 18*4, font_size: 16, s: '予選は誰でも参加できます'},
-			{x: 4, y:  14 + 18*5, font_size: 16, s: '上位' + conf.players.max_sync_players +'名が本戦に出ます'},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: '本戦には上位' + conf.players.max_sync_players +'名が出ます'},
 			{x: 4, y:  14 + 18*6, font_size: 16, s: '本選のスタートは予選のタイム順に並びます'},
 			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*8, font_size: 16, s: '出場しなくても楽しめます'},
 			{x: 4, y:  14 + 18*9, font_size: 16, s: 'どの選手が勝つのか賭けることができます'},
-			{x: 4, y:  14 + 18*10, font_size: 16, s: '風を起こし選手のヨットを操作できます'},
+			{x: 4, y:  14 + 18*10, font_size: 16, s: '風を起こし、選手のヨットを操作できます'},
 		],
 		callback_function: register_game,
 	};
@@ -210,6 +222,7 @@ module.exports.configure_game = configure_game;
 function register_game () {
 	play_status.phase = 1;
 	scene.assets['decision3'].play();
+	score_realtime.clear_score();
 	var q = {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: 'タップすると予選に参加します'},
@@ -401,29 +414,6 @@ module.exports.bidding_game =  bidding_game;
 
 function game_matching(mes) {
 	play_status.phase = 8;
-	// view_player_index = player_index;
-
-	// // re-address piece index here
-	// piece_index = player_index;
-	// view_piece_index = view_player_index;
-	// wm.local_scene_player[piece_index].set_local_scene();
-
-	// piece_handler_destination = 'game_manager_after_goal';
-	// scene.update.add(view_piece_handler);
-	// scene.update.add(piece_handler);
-
-	// pop.set_default();
-	// pop.set_player_index(player_index);
-	// pop.set_view_player_index(view_player_index);
-	// pop.set_piece_index(piece_index);
-	// pop.set_view_piece_index(view_piece_index);
-
-	// var ii = 0;
-	// while(ii < conf.players.max_sync_players)  {
-	// 	dd[ii].set_player_index(ii);
-	// 	dd[ii].set_view_player_index(ii);
-	// 	++ii;
-	// }
 
 	// sync this timer over players
 	if (player_index !== 0) return;
@@ -438,6 +428,7 @@ function game_matching(mes) {
 
 function game_start_sync_count_down(mes) {
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
+	score_realtime.clear_score();
 
 	view_player_index = player_index;
 
@@ -585,34 +576,41 @@ function view_piece_handler() {
 }
 function piece_handler() {
 	// console.log(check_index);
+	if (check_index >= check_area.length) return;
 	if (!check_area[check_index].validate(dd[piece_index])) return;
+	// console.log(check_index);
 	var t = g.game.age - play_status.starting_age;
 	dd[piece_index].group.tag.global.score.time = t;
 	dd[piece_index].group.tag.global.score.n_dollar += check_area[check_index].group.tag.global.n_dollar;
 	var n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
 	pop.set_line_message(dd[piece_index].report_check_point(t, check_area[check_index]));
 	check_area[check_index].set_status(3);
+	bcast_message_event.data.destination = 'score_file';
+	bcast_message_event.data.player_index = player_index;
+	bcast_message_event.data.piece_index = piece_index;
+	bcast_message_event.data.check_index = check_index;
+	bcast_message_event.data.time = t;
+	bcast_message_event.data.n_dollar = n_dollar;
+	g.game.raiseEvent(bcast_message_event);
 	if (check_index >= check_area.length - 1) {// <----
-		// console.log(piece_handler_destination);
-		var mes = {
-			data: {
-				destination: piece_handler_destination,
-				player_index: player_index,
-				piece_index: piece_index,
-				score: {
-					time:t,
-					n_dollar: n_dollar,
-				},
-			}
-		};
+		var mes = {data: {
+			destination: piece_handler_destination,
+			player_index: player_index,
+			piece_index: piece_index,
+			score: {
+				check_index: check_index,
+				time:t,
+				n_dollar: n_dollar,
+			},}};
 		scene.message.fire(mes);
 		scene.update.remove(piece_handler);
+		check_index++;
 		return;
 	}
 	else {
 		se_player.play(scene.assets.decision9);
+		check_index++;
 	}
-	check_index++;
 	check_area[check_index].set_status(2);
 }
 
