@@ -34,6 +34,8 @@ module.exports.group_id        = group_id;
 module.exports.status          = status;
 module.exports.inverse_p      = inverse_p;
 
+
+
 function set_scene(sc) { scene = sc;}
 module.exports.set_scene = set_scene;
 

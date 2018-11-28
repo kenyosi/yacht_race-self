@@ -171,6 +171,7 @@ module.exports.local = local;
 module.exports.players = {
 	max_players: 2,
 	max_sync_players: 2,
+	min_elimination_players: 1,
 	max_async_players: 1000,
 	admin : [true, false, false, false],
 	default: [
@@ -234,19 +235,19 @@ var help_board = {
 		opacity: 0.85,
 	},
 	text: [
-		{x: 20, y:  20, font_size: 16, s: '遊び方'},
-		{x: 20, y:  48, font_size: 12, s: '駒はドラッグ&ドロップで置きます'},
-		{x: 20, y:  60, font_size: 12, s: 'タップすると白黒反転します'},
-		{x: 20, y:  82, font_size: 12, s: 'Player1は配信者さん'},
-		{x: 20, y:  94, font_size: 12, s: 'Player2は駒を最初に触った視聴者さんです'},
-		{x: 20, y: 106, font_size: 12, s: '右の中央にプレイヤーの最初の2文字を表示します'},
-		{x: 20, y: 128, font_size: 12, s: '自分の名前をスワイプすると退席します'},
-		{x: 20, y: 140, font_size: 12, s: '3分間駒を動かさないと退席します'},
-		{x: 20, y: 162, font_size: 12, s: 'アイコン'},
-		{x: 20, y: 174, font_size: 12, s: '[□] 視点移動/固定、[？] ヘルプ表示/非表示'},
-		{x: 20, y: 188, font_size: 12, s: ''},
-		{x: 20, y: 208, font_size: 12, s: 'このボタンを押すと盤をひっくり返します'},
-		{x: 20, y: 210, font_size: 12, s: ''},
+		// {x: 20, y:  20, font_size: 16, s: '遊び方'},
+		// {x: 20, y:  48, font_size: 12, s: '駒はドラッグ&ドロップで置きます'},
+		// {x: 20, y:  60, font_size: 12, s: 'タップすると白黒反転します'},
+		// {x: 20, y:  82, font_size: 12, s: 'Player1は配信者さん'},
+		// {x: 20, y:  94, font_size: 12, s: 'Player2は駒を最初に触った視聴者さんです'},
+		// {x: 20, y: 106, font_size: 12, s: '右の中央にプレイヤーの最初の2文字を表示します'},
+		// {x: 20, y: 128, font_size: 12, s: '自分の名前をスワイプすると退席します'},
+		// {x: 20, y: 140, font_size: 12, s: '3分間駒を動かさないと退席します'},
+		// {x: 20, y: 162, font_size: 12, s: 'アイコン'},
+		// {x: 20, y: 174, font_size: 12, s: '[□] 視点移動/固定、[？] ヘルプ表示/非表示'},
+		// {x: 20, y: 188, font_size: 12, s: ''},
+		// {x: 20, y: 208, font_size: 12, s: 'このボタンを押すと盤をひっくり返します'},
+		// {x: 20, y: 210, font_size: 12, s: ''},
 	],
 };
 module.exports.help_board = help_board;
@@ -290,7 +291,6 @@ module.exports.comment = comment;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Window manager
-
 module.exports.status_bar = {
 	text: [
 		'Testing message'
