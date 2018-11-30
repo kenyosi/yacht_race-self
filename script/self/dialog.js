@@ -69,6 +69,10 @@ var normal = function (p) {
 			callback_function: {
 				tap:  p.callback_function.tap,
 				timeout: p.callback_function.timeout,
+			},
+			default :{
+				font_size: 16,
+				textColor: p.label.textColor,
 			}
 		},
 		hidden: false,
@@ -175,7 +179,8 @@ normal.prototype.set_text = function (p) {
 	for (var i = 0; i < length_p_text; i++) {
 		var tt = this.text[i];
 		tt.text = p.text[i].s;
-		tt.fontSize = p.text[i].font_size;
+		tt.fontSize = (p.text[i].font_size === undefined ? this.group.tag.default.font_size : p.text[i].font_size);
+		tt.textColor = (p.text[i].textColor === undefined ? this.group.tag.default.textColor : p.text[i].textColor);
 		tt.invalidate();
 		var tt_rect = tt.calculateBoundingRect();
 		var rect_width = tt_rect.right - tt_rect.left;

@@ -179,9 +179,9 @@ function configure_game () {
 			{x: 4, y:  14 + 18*0, font_size: 16, s: 'ヨットレース、ガイド'},
 			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: 'ヨットでゴールを目指します'},
-			{x: 4, y:  14 + 18*3, font_size: 16, s: '予選と本選が1サイクルです'},
+			{x: 4, y:  14 + 18*3, font_size: 16, s: '予選と本戦が1サイクルです'},
 			{x: 4, y:  14 + 18*4, font_size: 16, s: '予選は誰でも参加できます'},
-			{x: 4, y:  14 + 18*5, font_size: 16, s: '本選は予選の上位' + conf.players.max_sync_players +'名が出ます'},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: '本戦は予選の上位' + conf.players.max_sync_players +'名が出ます'},
 			{x: 4, y:  14 + 18*6, font_size: 16, s: 'スタート位置はタイム順です'},
 			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*8, font_size: 16, s: '出場しなくても楽しめます'},
@@ -210,9 +210,9 @@ function register_game () {
 			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: '誰でも参加できます'},
 			{x: 4, y:  14 + 18*3, font_size: 16, s: 'タップしてタイムアタックして下さい'},
-			{x: 4, y:  14 + 18*4, font_size: 16, s: '予選タイムで本戦の開始位置を決めます'},
-			{x: 4, y:  14 + 18*5, font_size: 16, s: '応募が多いときは上位'+ conf.players.max_sync_players +'名が本戦に出ます'},
-			{x: 4, y:  14 + 18*6, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
 			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
@@ -237,9 +237,9 @@ function register_game () {
 					{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
 					{x: 4, y:  14 + 18*2, font_size: 16, s: '誰でも参加できます'},
 					{x: 4, y:  14 + 18*3, font_size: 16, s: 'タップしてタイムアタックして下さい'},
-					{x: 4, y:  14 + 18*4, font_size: 16, s: '予選タイムで本戦の開始位置を決めます'},
-					{x: 4, y:  14 + 18*5, font_size: 16, s: '応募が多いときは上位'+ conf.players.max_sync_players +'名が本戦に出ます'},
-					{x: 4, y:  14 + 18*6, font_size: 16, s: ''},
+					{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
+					{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
+					{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
 					{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
 					{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
 					{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
@@ -324,17 +324,22 @@ function elimination_start_async_timer(mes) {
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選スタートまで'},
-			{x: 4, y:  14 + 18*2, font_size: 32, s: Math.ceil((play_status.starting_age - g.game.age) / g.game.fps).toString()},
-			{x: 4, y:  14 + 18*5, font_size: 16, s: '操船はスタート後です'},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: 'スタートまで'},
+			{x: 4, y:  14 + 18*3, font_size: 32, s: Math.ceil((play_status.starting_age - g.game.age) / g.game.fps).toString()},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: 'スロットルとラダーはスタート後、使います'},
+			{x: 4, y:  14 + 18*7, font_size: 16, s: '風に乗ればヨットは加速します'},
+			{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
 		],
 		callback_function: {
 			tap: undefined,
 			timeout: undefined,
 		},
 	};
-	starting_dialog.set_text(q);	
-	starting_dialog.text[1].update.add(function countdown_timer(){
+	starting_dialog.set_text(q);
+	var countdown_line = 2;
+	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps * 3 + 10)) {
 			bgm_player.play(scene.assets[conf.audio.bgm.play]);
@@ -346,12 +351,12 @@ function elimination_start_async_timer(mes) {
 		}
 		if (current_count % g.game.fps != 0) return;
 		var cn = current_count / g.game.fps;
-		starting_dialog.text[1].text = cn.toString();
-		starting_dialog.text[1].invalidate();
+		starting_dialog.text[countdown_line].text = cn.toString();
+		starting_dialog.text[countdown_line].invalidate();
 		if (cn != 0) return;
 		play_status.phase = 4;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
-		starting_dialog.text[1].update.remove(countdown_timer);
+		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 		starting_dialog.group.hide();
 		scene.setTimeout(game_timeout, elimination_game_milliseconds);
 	});
@@ -465,9 +470,8 @@ function bidding_game(mes) {
 
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: '結果と賭けの対象の表示(TBD)'},
-			{x: 4, y:  14 + 18*1, font_size: 16, s: '1位...'},
-			{x: 4, y:  14 + 18*2, font_size: 16, s: '2位...'},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選結果と賭けの対象の表示(TBD)'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
 		],
 		callback_function: {
 			tap: game_matching,
@@ -475,25 +479,55 @@ function bidding_game(mes) {
 		},
 		count_down: default_message_sec,
 	};
+	// tentative scoring board
+	// var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
+	var sr = score_realtime.get_result();
+	var sb = score_realtime.get_best();
+	console.log(sr);
+	var n_plyaers = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
+	var is_ranked = false;
+	var result_line;
+	ii = 0;
+	console.log(player_index);
+	while (ii < n_plyaers) {
+		var result_player_index = sr[ii][1];
+		result_line = (ii+1) + '位, P' + (result_player_index+1);
+		if (sr[ii][2] === 2) result_line += ', タイム=' +  sr[ii][3];
+		if (sb[result_player_index].check_index === 2) result_line += ', ベスト=' + sb[result_player_index].time;
+		if (result_player_index == player_index) {
+			is_ranked = true;
+			q.text[ii + 1].textColor = '#FF0000';
+			result_line += ' ←あなた';
+		}
+		q.text[ii + 1].s = result_line;
+		++ii;
+	}
+
+
 	starting_dialog.set_text(q);
 }
 module.exports.bidding_game =  bidding_game;
 
 function game_matching(mes) {
 	play_status.phase = 8;
-
 	// sync this timer over players
-	if (player_index !== 0) return;
-	// scene.message.fire({data: { /* doesn't work */ }});
-	bcast_message_event.data = {
-		destination: 'game_manager_game_start_sync_count_down',
-		starting_age: g.game.age + g.game.fps * ready_go_sec,
-		ending_age: g.game.age + g.game.fps * (ready_go_sec + game_sec), // tentative number
-	};
-	g.game.raiseEvent(bcast_message_event);
+	// if (player_index !== 0) return;
+	// // scene.message.fire({data: { /* doesn't work */ }});
+	// bcast_message_event.data = {
+	// 	destination: 'game_manager_game_start_sync_count_down',
+	// 	starting_age: g.game.age + g.game.fps * ready_go_sec,
+	// 	ending_age: g.game.age + g.game.fps * (ready_go_sec + game_sec), // tentative number
+	// };
+	// g.game.raiseEvent(bcast_message_event);
+
+	var age = play_status.end_wait_elimination_age;
+	play_status.starting_age = age + (ready_go_sec + default_message_sec) * g.game.fps;
+	play_status.ending_age   = play_status.starting_age + game_sec * g.game.fps;
+	game_start_sync_count_down();
 }
 
-function game_start_sync_count_down(mes) {
+// function game_start_sync_count_down(mes) {
+function game_start_sync_count_down() {
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	score_realtime.clear_score();
 
@@ -530,22 +564,24 @@ function game_start_sync_count_down(mes) {
 	bcast_message_event.data.n_dollar = 0;
 	g.game.raiseEvent(bcast_message_event);
 
-
-	play_status.starting_age = mes.data.starting_age;
-	play_status.ending_age   = mes.data.ending_age;
+	// play_status.starting_age = mes.data.starting_age;
+	// play_status.ending_age   = mes.data.ending_age;
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: '本線スタートまで'},
-			{x: 4, y:  14 + 18*2, font_size: 32, s: Math.ceil((play_status.starting_age - g.game.age) / g.game.fps).toString()},
-			{x: 4, y:  14 + 18*5, font_size: 16, s: '操船はスタート後です'},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: '本戦'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: 'スタートまで'},
+			{x: 4, y:  14 + 18*3, font_size: 32, s: Math.ceil((play_status.starting_age - g.game.age) / g.game.fps).toString()},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: 'スロットルとラダーはスタート後、使います'},
+			{x: 4, y:  14 + 18*7, font_size: 16, s: '風に乗ればヨットは加速します'},
 		],
 		callback_function: {
 			tap: undefined,
 			timeout: undefined,
 		},
 	};
-	starting_dialog.set_text(q);	
-	starting_dialog.text[1].update.add(function countdown_timer(){
+	starting_dialog.set_text(q);
+	var countdown_line = 2;
+	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps *2 + 10)) {
 			voice_player.play(scene.assets.info_girl1_info_girl1_ready1);
@@ -553,12 +589,12 @@ function game_start_sync_count_down(mes) {
 		}
 		if (current_count % g.game.fps != 0) return;
 		var cn = current_count / g.game.fps;
-		starting_dialog.text[1].text = cn.toString();
-		starting_dialog.text[1].invalidate();
+		starting_dialog.text[countdown_line].text = cn.toString();
+		starting_dialog.text[countdown_line].invalidate();
 		if (cn != 0) return;
 		play_status.phase = 9;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
-		starting_dialog.text[1].update.remove(countdown_timer);
+		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 		starting_dialog.group.hide();
 		scene.setTimeout(game_timeout, game_milliseconds);
 	});
@@ -717,11 +753,12 @@ function piece_handler() {
 }
 
 function set_age_min_players_attended (mes) {
-	console.log('set_age_min_players_attended');
-	console.log(mes);
+	// console.log('set_age_min_players_attended');
+	// console.log(mes);
 	var age = mes.data.age;
 	var end_age = age +
-	(default_message_sec + ready_go_sec + elimination_game_sec + default_message_sec) * g.game.fps;
+	// (default_message_sec + ready_go_sec + elimination_game_sec + default_message_sec) * g.game.fps;
+	(default_message_sec + ready_go_sec + elimination_game_sec) * g.game.fps;
 	play_status.end_wait_elimination_age = end_age;
 }
 module.exports.set_age_min_players_attended = set_age_min_players_attended;

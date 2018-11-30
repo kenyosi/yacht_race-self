@@ -20,7 +20,7 @@ var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
 var scene;
 var font_size = 16;
 var real_time_lines = 6;
-var current = [];
+var current = [[]];
 var best    = {};
 var ii = 0;
 var game_sec = 15;
@@ -56,14 +56,25 @@ var realtime = function () {
 		height: clo.height,
 	});
 	pane.append(board);
-	this.operation = board;
+	this.board = board;
+
+	// var background = new g.FilledRect({
+	// 	scene: scene,
+	// 	cssColor: '#FFFFFF',
+	// 	opacity: 0.1,
+	// 	width: clo.width,
+	// 	height: clo.height,
+	// 	touchable: false,
+	// });
+	// board.append(background);
+	// this.background = background;
 
 	var title = new g.Label({
 		scene: scene,
 		font: font.bitmap['16_default'],
 		text: 'ランキング',
 		fontSize: font_size,
-		textColor:  '#000000',
+		textColor:  '#888888',
 		opacity: 1.0,
 		x: 0,
 		y: 0.05 * g.game.height,
@@ -80,7 +91,7 @@ var realtime = function () {
 		font: font.bitmap['16_default'],
 		text: '場所: プレイヤー, タイム, 稼ぎ',
 		fontSize: font_size,
-		textColor:  '#000000',
+		textColor:  '#888888',
 		opacity: 1.0,
 		x: 0.02 * g.game.width,
 		y: 0.05 * g.game.height + font_size*2,
@@ -97,7 +108,7 @@ var realtime = function () {
 			font: font.bitmap['16_default'],
 			text: '',
 			fontSize: font_size,
-			textColor:  '#000000',
+			textColor:  '#888888',
 			opacity: 1.0,
 			x: 0.02 * g.game.width,
 			y: 0.05 * g.game.height + 16 * (ii + 4),
@@ -137,6 +148,15 @@ realtime.prototype.clear_score = function () {
 	current = [];
 };
 
+realtime.prototype.get_result = function () {
+	// tentative scoring
+	return current;
+};
+realtime.prototype.get_best = function () {
+	// tentative scoring
+	return best;
+};
+
 realtime.prototype.get_number_of_participants = function () {
 	return current.length;
 };
@@ -164,11 +184,11 @@ function file(mes) {
 	// console.log(best);
 	var global_score = check_point_age[fi.check_index] + fi.time;
 	var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
-	console.log(current);
-	console.log(current.length);
+	// console.log(current);
+	// console.log(current.length);
 	if (current.length === 0) {
 		current.push(r);
-		console.log(current);
+		// console.log(current);
 		if (current.length >= conf.players.min_elimination_players) {
 			broadcast_age_min_players_attended();
 		}
@@ -180,7 +200,7 @@ function file(mes) {
 	while (si < length_before_file) {// delete an old record
 		if (current[si][1] === fi.player_index) {
 			current.splice(si, 1);
-			console.log(current);
+			// console.log(current);
 			break;
 		}
 		++si;
@@ -188,13 +208,13 @@ function file(mes) {
 	si = 0;
 	if (current.length === 0) { // check if length zero after remove the old records
 		current.push(r);
-		console.log(current);
+		// console.log(current);
 		return;
 	}
 	while (si < current.length) {
 		if (global_score <= current[si][0]) {
 			current.splice(si, 0, r);
-			console.log(current);
+			// console.log(current);
 			if (length_before_file < conf.players.min_elimination_players
 				&& current.length >= conf.players.min_elimination_players) {
 				broadcast_age_min_players_attended();
@@ -209,7 +229,7 @@ function file(mes) {
 module.exports.file = file;
 
 function broadcast_age_min_players_attended() {
-	console.log('broadcast_message');
+	// console.log('broadcast_message');
 	// send satisfy min number of player to all to determine end age of elimination
 	var current_age = g.game.age;
 	bcast_message_event.data.destination = 'game_manager_set_age_min_players_attended';
