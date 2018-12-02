@@ -320,7 +320,6 @@ function elimination_start_async_timer(mes) {
 	bgm_player.stop();
 	play_status = mes.data.value;
 	play_status.phase = 3;
-	piece_handler_destination = 'game_manager_elimination_after_goal';
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	var q = {
 		text: [
@@ -356,19 +355,24 @@ function elimination_start_async_timer(mes) {
 		if (cn != 0) return;
 		play_status.phase = 4;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
-		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 		starting_dialog.group.hide();
-		scene.setTimeout(game_timeout, elimination_game_milliseconds);
+		// scene.setTimeout(game_timeout('game_manager_elimination_after_goal'), elimination_game_milliseconds);
+		scene.setTimeout(function() {
+			console.log('timeout el');
+			game_timeout('game_manager_elimination_after_goal');
+		}, elimination_game_milliseconds);
+		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 	});
 
 }
 module.exports.elimination_start_async_timer = elimination_start_async_timer;
-
-function game_timeout() {
+// function game_timeout() {
+function game_timeout(destionation_function) {
 	var n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
 	var mes = {
 		data: {
-			destination: piece_handler_destination,
+			// destination: piece_handler_destination,
+			destination: destionation_function,
 			player_index: player_index,
 			score: {
 				time: undefined,
@@ -528,6 +532,8 @@ function game_matching(mes) {
 
 // function game_start_sync_count_down(mes) {
 function game_start_sync_count_down() {
+	// play_status.starting_age = mes.data.starting_age;
+	// play_status.ending_age   = mes.data.ending_age;
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	score_realtime.clear_score();
 
@@ -538,7 +544,6 @@ function game_start_sync_count_down() {
 	view_piece_index = view_player_index;
 	wm.local_scene_player[piece_index].set_local_scene();
 
-	piece_handler_destination = 'game_manager_after_goal';
 	scene.update.add(view_piece_handler);
 	scene.update.add(piece_handler);
 
@@ -564,8 +569,6 @@ function game_start_sync_count_down() {
 	bcast_message_event.data.n_dollar = 0;
 	g.game.raiseEvent(bcast_message_event);
 
-	// play_status.starting_age = mes.data.starting_age;
-	// play_status.ending_age   = mes.data.ending_age;
 	var q = {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: '本戦'},
@@ -594,9 +597,12 @@ function game_start_sync_count_down() {
 		if (cn != 0) return;
 		play_status.phase = 9;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
-		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 		starting_dialog.group.hide();
-		scene.setTimeout(game_timeout, game_milliseconds);
+		scene.setTimeout(function() {
+			console.log('timeout final');
+			game_timeout('game_manager_after_goal');
+		}, elimination_game_milliseconds);
+		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 	});
 }
 module.exports.game_start_sync_count_down = game_start_sync_count_down;

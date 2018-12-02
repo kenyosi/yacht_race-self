@@ -151,6 +151,9 @@ yacht.prototype.set_player_index = function (player_index) {
 	this.group.tag.player_index = player_index;
 	inverse_p[player_index] = this.group.tag.initial.index; // <---
 };
+yacht.prototype.get_player_index = function () {
+	return this.player_index;
+};
 
 yacht.prototype.set_view_player_index = function (view_player_index) {
 	this.view_player_index = view_player_index;
@@ -166,6 +169,7 @@ yacht.prototype.set_view_player_index = function (view_player_index) {
 	this.group.modified();
 
 };
+
 
 yacht.prototype.set_plain_yacht = function () {
 	this.group.tag.global.score = {

@@ -252,6 +252,11 @@
 			"type": "script",
 			"path": "script/score.js",
 			"global": true
+		},
+		"timer": {
+			"type": "script",
+			"path": "script/self/timer.js",
+			"global": true
 		}
 	},
 	"environment": {
