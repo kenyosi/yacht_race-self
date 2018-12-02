@@ -395,7 +395,7 @@ function elimination_after_goal(mes) {
 	var is_goal = (mes.data.score.time === undefined ? false : true);
 	var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
 	if (is_goal) {
-		// scene.clearTimeout(game_timeout); //doesn't work below statements
+		// scene.clearTimeout(game_timeout); //doesn't work
 		voice_player.play(scene.assets.info_girl1_info_girl1_goal1);
 		var q = {
 			text: [
@@ -485,6 +485,8 @@ function bidding_game(mes) {
 		callback_function: {
 			tap: game_matching,
 			timeout: game_matching,
+			// tap: start,
+			// timeout: start,
 		},
 		count_down: default_message_sec,
 	};
@@ -528,23 +530,21 @@ function game_matching(mes) {
 	};
 	g.game.raiseEvent(bcast_message_event);
 
-	// async version
 	// var age = play_status.end_wait_elimination_age;
 	// play_status.starting_age = age + (ready_go_sec + default_message_sec) * g.game.fps;
 	// play_status.ending_age   = play_status.starting_age + game_sec * g.game.fps;
 	// game_start_sync_count_down();
 }
 
-// function game_start_sync_count_down(mes) {
-function game_start_sync_count_down() {
+function game_start_sync_count_down(mes) {
+// function game_start_sync_count_down() {
 	play_status.phase = 8;
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
-	// play_status.starting_age = mes.data.starting_age;
-	// play_status.ending_age   = mes.data.ending_age;
+	play_status.starting_age = mes.data.starting_age;
+	play_status.ending_age   = mes.data.ending_age;
+	view_piece_handler();
+	piece_handler();
 	piece_handler_destination = 'game_manager_after_goal';
-	scene.update.add(view_piece_handler);
-	scene.update.add(piece_handler);
-
 	score_realtime.clear_score();
 
 	view_player_index = player_index;
@@ -592,10 +592,13 @@ function game_start_sync_count_down() {
 	starting_dialog.set_text(q);
 	var countdown_line = 2;
 	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
+		console.log(g.game.age +','+ play_status.starting_age);
 		if (play_status.phase !== 8) return;
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps *2 + 10)) {
 			voice_player.play(scene.assets.info_girl1_info_girl1_ready1);
+			scene.update.add(view_piece_handler);
+			scene.update.add(piece_handler);
 			return;
 		}
 		if (current_count % g.game.fps != 0) return;
