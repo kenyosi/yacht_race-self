@@ -708,8 +708,10 @@ function result_balance(mes) {
 			{x: 4, y:  14 + 18*2, font_size: 16, s: 'タップすると次のレースをします'},
 		],
 		callback_function: {
-			tap: pass_though,
-			timeout: pass_though,
+			tap: start,
+			timeout: start,
+			// tap: pass_though,
+			// timeout: pass_though,
 		},
 		count_down: 10,
 	};

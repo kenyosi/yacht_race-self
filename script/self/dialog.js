@@ -169,7 +169,8 @@ var normal = function (p) {
 		if (background.tag.parent.tag.callback_function.tap === undefined) return;
 		background.tag.progress_bar.update.remove(timer_countdown);
 		background.tag.parent.hide();
-		background.tag.parent.tag.callback_function.tap();
+		// background.tag.parent.tag.callback_function.tap();
+		scene.setTimeout(function() {background.tag.parent.tag.callback_function.tap();}, 0);
 	});
 };
 module.exports.normal = normal;
