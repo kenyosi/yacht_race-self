@@ -311,9 +311,12 @@ function elimination_start_async() {
 			value: play_status,
 		}
 	};
-	piece_handler_destination = 'game_manager_elimination_after_goal';
-	scene.update.add(view_piece_handler);
-	scene.update.add(piece_handler);
+	// piece_handler_destination = 'game_manager_elimination_after_goal';
+	// scene.update.add(view_piece_handler);
+	// scene.update.add(piece_handler);
+	//initialize view
+	view_piece_handler();
+	piece_handler();
 	scene.message.fire(mes);
 }
 
@@ -344,6 +347,9 @@ function elimination_start_async_timer(mes) {
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps * 3 + 10)) {
 			bgm_player.play(scene.assets[conf.audio.bgm.play]);
+			piece_handler_destination = 'game_manager_elimination_after_goal';
+			scene.update.add(view_piece_handler);
+			scene.update.add(piece_handler);
 			return;
 		}
 		if (current_count === (g.game.fps *2 + 10)) {
@@ -516,9 +522,6 @@ module.exports.bidding_game =  bidding_game;
 
 function game_matching(mes) {
 	play_status.phase = 8;
-	piece_handler_destination = 'game_manager_after_goal';
-	scene.update.add(view_piece_handler);
-	scene.update.add(piece_handler);
 
 	// sync this timer over players
 	// if (player_index !== 0) return;
@@ -538,40 +541,44 @@ function game_matching(mes) {
 
 // function game_start_sync_count_down(mes) {
 function game_start_sync_count_down() {
+	play_status.phase = 8;
+	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	// play_status.starting_age = mes.data.starting_age;
 	// play_status.ending_age   = mes.data.ending_age;
-	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
-	score_realtime.clear_score();
+	piece_handler_destination = 'game_manager_after_goal';
+	scene.update.add(view_piece_handler);
+	scene.update.add(piece_handler);
 
-	view_player_index = player_index;
+	// score_realtime.clear_score();
+
+	// view_player_index = player_index;
 
 	// re-address piece index here
-	piece_index = player_index;
-	view_piece_index = view_player_index;
-	wm.local_scene_player[piece_index].set_local_scene();
+	// piece_index = player_index;
+	// view_piece_index = view_player_index;
+	// wm.local_scene_player[piece_index].set_local_scene();
 
+	// pop.set_default();
+	// pop.set_player_index(player_index);
+	// pop.set_view_player_index(view_player_index);
+	// pop.set_piece_index(piece_index);
+	// pop.set_view_piece_index(view_piece_index);
 
-	pop.set_default();
-	pop.set_player_index(player_index);
-	pop.set_view_player_index(view_player_index);
-	pop.set_piece_index(piece_index);
-	pop.set_view_piece_index(view_piece_index);
+	// var ii = 0;
+	// while(ii < conf.players.max_sync_players)  {
+	// 	dd[ii].set_player_index(ii);
+	// 	dd[ii].set_view_player_index(view_player_index);
+	// 	++ii;
+	// }
 
-	var ii = 0;
-	while(ii < conf.players.max_sync_players)  {
-		dd[ii].set_player_index(ii);
-		dd[ii].set_view_player_index(view_player_index);
-		++ii;
-	}
-
-	// send initial state to score board
-	bcast_message_event.data.destination = 'score_file';
-	bcast_message_event.data.player_index = player_index;
-	bcast_message_event.data.piece_index = player_index; // <-- tentative
-	bcast_message_event.data.check_index = -1;
-	bcast_message_event.data.time = 0;
-	bcast_message_event.data.n_dollar = 0;
-	g.game.raiseEvent(bcast_message_event);
+	// // send initial state to score board
+	// bcast_message_event.data.destination = 'score_file';
+	// bcast_message_event.data.player_index = player_index;
+	// bcast_message_event.data.piece_index = player_index; // <-- tentative
+	// bcast_message_event.data.check_index = -1;
+	// bcast_message_event.data.time = 0;
+	// bcast_message_event.data.n_dollar = 0;
+	// g.game.raiseEvent(bcast_message_event);
 
 	var q = {
 		text: [
