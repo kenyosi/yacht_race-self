@@ -760,8 +760,9 @@ function piece_handler() {
 				time:t,
 				n_dollar: n_dollar,
 			},}};
-		scene.message.fire(mes);
+		// scene.message.fire(mes);
 		// scene.update.remove(piece_handler);
+		tentative_goal(player_index, t, n_dollar);
 		check_index++;
 		return;
 	}
@@ -782,6 +783,26 @@ function set_age_min_players_attended (mes) {
 	play_status.end_wait_elimination_age = end_age;
 }
 module.exports.set_age_min_players_attended = set_age_min_players_attended;
+
+function tentative_goal(player_index, time, n_dollar){
+	voice_player.play(scene.assets.info_girl1_info_girl1_goal1);
+	var q = {
+		text: [
+			{x: 4, y:  14 + 18*0, font_size: 16, s: 'ゴール！'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: 'プレイヤー: タイム/稼ぎ'},
+			{x: 4, y:  14 + 18*2, font_size: 16, s: 'P' + (player_index + 1) + ': ' + time + '/' + n_dollar},
+			{x: 4, y:  14 + 18*3, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*4, font_size: 16, s: '結果がそろうまで'},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: 'しばらくお待ち下さい'},
+		],
+		callback_function: {
+			tap: undefined,
+			timeout: undefined,
+		},
+		count_down: undefined,
+	};
+	starting_dialog.set_text(q);
+}
 
 // function broadcast_message() {
 // 	// send satisfy min number of player to all to determine end age of elimination
