@@ -152,11 +152,12 @@ function init_game (p) {
 	p = dialog.default_parameters;
 	starting_dialog = new dialog.normal(p);
 	bgm_player.play(scene.assets[conf.audio.bgm.util]);
-	configure_game();
+	// configure_game();
 }
 module.exports.init_game = init_game;
 
-function configure_game () {
+// function configure_game () {
+function start () {
 	// console.log(scene);
 	play_status.phase = 0;
 	lpv.x = initial_lpv.x; //<---
@@ -196,7 +197,7 @@ function configure_game () {
 	};
 	starting_dialog.set_text(q);
 }
-module.exports.configure_game = configure_game;
+module.exports.start = start;
 
 function register_game () {
 	play_status.phase = 1;
@@ -227,36 +228,32 @@ function register_game () {
 	starting_dialog.set_text(q);
 	var registration_closing = scene.setInterval(function (){
 		if (play_status.phase != 1) {scene.clearInterval(registration_closing); return;}
-		if (score_realtime.get_number_of_participants() >= conf.players.min_elimination_players) {
-			play_status.phase = 2;
-			console.log('reach to min. num players');
-			scene.clearInterval(registration_closing);
-			q = {
-				text: [
-					{x: 4, y:  14 + 18*0, font_size: 16, s: 'まもなく予選の参加受付を終了します'},
-					{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
-					{x: 4, y:  14 + 18*2, font_size: 16, s: '誰でも参加できます'},
-					{x: 4, y:  14 + 18*3, font_size: 16, s: 'タップしてタイムアタックして下さい'},
-					{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
-					{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
-					{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
-					{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
-					{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
-					{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
-					{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
-				],
-				callback_function: {
-					tap: elimination_start_async,
-					timeout: elimination_game_set,
-				},
-				count_down: default_message_sec,
-			};
-			starting_dialog.set_text(q);
-		}
-
+		if (score_realtime.get_number_of_participants() < conf.players.min_elimination_players) return;
+		play_status.phase = 2;
+		console.log('reach to min. num players');
+		// scene.clearInterval(registration_closing);
+		q = {
+			text: [
+				{x: 4, y:  14 + 18*0, font_size: 16, s: 'まもなく予選の参加受付を終了します'},
+				{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
+				{x: 4, y:  14 + 18*2, font_size: 16, s: '誰でも参加できます'},
+				{x: 4, y:  14 + 18*3, font_size: 16, s: 'タップしてタイムアタックして下さい'},
+				{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
+				{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
+				{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
+				{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
+				{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
+				{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
+				{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
+			],
+			callback_function: {
+				tap: elimination_start_async,
+				timeout: elimination_game_set,
+			},
+			count_down: default_message_sec,
+		};
+		starting_dialog.set_text(q);		
 	}, 1000);
-
-
 }
 module.exports.register_game = register_game;
 
@@ -514,8 +511,6 @@ function bidding_game(mes) {
 		q.text[ii + 1].s = result_line;
 		++ii;
 	}
-
-
 	starting_dialog.set_text(q);
 }
 module.exports.bidding_game =  bidding_game;
@@ -713,8 +708,8 @@ function result_balance(mes) {
 			{x: 4, y:  14 + 18*2, font_size: 16, s: 'タップすると次のレースをします'},
 		],
 		callback_function: {
-			tap: configure_game,
-			timeout: configure_game,
+			tap: pass_though,
+			timeout: pass_though,
 		},
 		count_down: 10,
 	};
@@ -722,6 +717,8 @@ function result_balance(mes) {
 	scene.update.remove(view_piece_handler);
 	scene.update.remove(piece_handler);
 }
+
+function pass_though() {}
 
 function view_piece_handler() {
 	var xy = {

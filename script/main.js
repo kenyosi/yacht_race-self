@@ -98,6 +98,10 @@ function main() {
 		lpv.pointUp.add(function (ev) {wind.emit(ev);});
 
 		game_manager.init_game(lpv);
+		// while(true) {
+		console.log('new game');
+		game_manager.start();
+		// }
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Create window manager
 		scene.setTimeout(function() {wm.create();}, 100);
