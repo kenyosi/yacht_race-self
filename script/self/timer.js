@@ -34,15 +34,15 @@ function check_age(index) {
 	if (!timer_que[index][0]) return;
 	if (g.game.age >= timer_que[index][1]) {
 		timer_que[index][0] = false;
-		console.log('time_out' + index + ', call:' + timer_que[index][2]);
+		// console.log('time_out' + index + ', call:' + timer_que[index][2]);
 		timer_que[index][2](); // call back
 	} 
 }
 
 function add_delta_frame(fp, frame) {
-	console.log('post: ' + frame);
+	// console.log('post: ' + frame);
 	current_que_index = (current_que_index + 1) % que_size;
 	timer_que[current_que_index] = [true, g.game.age + frame, fp];
-	console.log(timer_que);
+	// console.log(timer_que);
 }
 module.exports.add_delta_frame = add_delta_frame;
