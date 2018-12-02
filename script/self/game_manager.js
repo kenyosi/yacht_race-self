@@ -365,22 +365,22 @@ function elimination_start_async_timer(mes) {
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
 		starting_dialog.group.hide();
 		// scene.setTimeout(game_timeout('game_manager_elimination_after_goal'), elimination_game_milliseconds);
-		scene.setTimeout(function() {
-			console.log('timeout el');
-			game_timeout('game_manager_elimination_after_goal');
-		}, elimination_game_milliseconds);
+		// scene.setTimeout(function() {
+		// 	console.log('timeout el');
+		// 	game_timeout('game_manager_elimination_after_goal');
+		// }, elimination_game_milliseconds);
 		starting_dialog.text[countdown_line].update.remove(elimination_countdown_timer);
 	});
 
 }
 module.exports.elimination_start_async_timer = elimination_start_async_timer;
-// function game_timeout() {
-function game_timeout(destionation_function) {
+function game_timeout() {
+// function game_timeout(destionation_function) {
 	var n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
 	var mes = {
 		data: {
-			// destination: piece_handler_destination,
-			destination: destionation_function,
+			destination: piece_handler_destination,
+			// destination: destionation_function,
 			player_index: player_index,
 			score: {
 				time: undefined,
@@ -610,10 +610,10 @@ function game_start_sync_count_down() {
 		play_status.phase = 9;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
 		starting_dialog.group.hide();
-		scene.setTimeout(function() {
-			console.log('timeout final');
-			game_timeout('game_manager_after_goal');
-		}, elimination_game_milliseconds);
+		// scene.setTimeout(function() {
+		// 	console.log('timeout final');
+		// 	game_timeout('game_manager_after_goal');
+		// }, elimination_game_milliseconds);
 		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 	});
 }
@@ -733,6 +733,11 @@ function view_piece_handler() {
 }
 function piece_handler() {
 	// console.log(check_index);
+	if (play_status.phase != 4 && play_status.phase != 9) return;
+	if (g.game.age > play_status.ending_age) {
+		game_timeout();
+		return;
+	}
 	if (check_index >= check_area.length) return;
 	if (!check_area[check_index].validate(dd[piece_index])) return;
 	// console.log(check_index);
