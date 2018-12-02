@@ -519,19 +519,20 @@ function game_matching(mes) {
 	play_status.phase = 8;
 
 	// sync this timer over players
-	// if (player_index !== 0) return;
-	// // scene.message.fire({data: { /* doesn't work */ }});
-	// bcast_message_event.data = {
-	// 	destination: 'game_manager_game_start_sync_count_down',
-	// 	starting_age: g.game.age + g.game.fps * ready_go_sec,
-	// 	ending_age: g.game.age + g.game.fps * (ready_go_sec + game_sec), // tentative number
-	// };
-	// g.game.raiseEvent(bcast_message_event);
+	if (player_index !== 0) return;
+	// scene.message.fire({data: { /* doesn't work */ }});
+	bcast_message_event.data = {
+		destination: 'game_manager_game_start_sync_count_down',
+		starting_age: g.game.age + g.game.fps * ready_go_sec,
+		ending_age: g.game.age + g.game.fps * (ready_go_sec + game_sec), // tentative number
+	};
+	g.game.raiseEvent(bcast_message_event);
 
-	var age = play_status.end_wait_elimination_age;
-	play_status.starting_age = age + (ready_go_sec + default_message_sec) * g.game.fps;
-	play_status.ending_age   = play_status.starting_age + game_sec * g.game.fps;
-	game_start_sync_count_down();
+	// async version
+	// var age = play_status.end_wait_elimination_age;
+	// play_status.starting_age = age + (ready_go_sec + default_message_sec) * g.game.fps;
+	// play_status.ending_age   = play_status.starting_age + game_sec * g.game.fps;
+	// game_start_sync_count_down();
 }
 
 // function game_start_sync_count_down(mes) {
