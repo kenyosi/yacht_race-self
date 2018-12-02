@@ -466,7 +466,7 @@ function bidding_game(mes) {
 	play_status.phase = 7;
 	check_index = 0;
 	scene.update.remove(view_piece_handler);
-	// scene.update.remove(piece_handler); // <---
+	scene.update.remove(piece_handler); // <---
 
 	var ii = 0;
 	while (ii < check_area.length) {
@@ -549,36 +549,36 @@ function game_start_sync_count_down() {
 	scene.update.add(view_piece_handler);
 	scene.update.add(piece_handler);
 
-	// score_realtime.clear_score();
+	score_realtime.clear_score();
 
-	// view_player_index = player_index;
+	view_player_index = player_index;
 
 	// re-address piece index here
-	// piece_index = player_index;
-	// view_piece_index = view_player_index;
-	// wm.local_scene_player[piece_index].set_local_scene();
+	piece_index = player_index;
+	view_piece_index = view_player_index;
+	wm.local_scene_player[piece_index].set_local_scene();
 
-	// pop.set_default();
-	// pop.set_player_index(player_index);
-	// pop.set_view_player_index(view_player_index);
-	// pop.set_piece_index(piece_index);
-	// pop.set_view_piece_index(view_piece_index);
+	pop.set_default();
+	pop.set_player_index(player_index);
+	pop.set_view_player_index(view_player_index);
+	pop.set_piece_index(piece_index);
+	pop.set_view_piece_index(view_piece_index);
 
-	// var ii = 0;
-	// while(ii < conf.players.max_sync_players)  {
-	// 	dd[ii].set_player_index(ii);
-	// 	dd[ii].set_view_player_index(view_player_index);
-	// 	++ii;
-	// }
+	var ii = 0;
+	while(ii < conf.players.max_sync_players)  {
+		dd[ii].set_player_index(ii);
+		dd[ii].set_view_player_index(view_player_index);
+		++ii;
+	}
 
-	// // send initial state to score board
-	// bcast_message_event.data.destination = 'score_file';
-	// bcast_message_event.data.player_index = player_index;
-	// bcast_message_event.data.piece_index = player_index; // <-- tentative
-	// bcast_message_event.data.check_index = -1;
-	// bcast_message_event.data.time = 0;
-	// bcast_message_event.data.n_dollar = 0;
-	// g.game.raiseEvent(bcast_message_event);
+	// send initial state to score board
+	bcast_message_event.data.destination = 'score_file';
+	bcast_message_event.data.player_index = player_index;
+	bcast_message_event.data.piece_index = player_index; // <-- tentative
+	bcast_message_event.data.check_index = -1;
+	bcast_message_event.data.time = 0;
+	bcast_message_event.data.n_dollar = 0;
+	g.game.raiseEvent(bcast_message_event);
 
 	var q = {
 		text: [
@@ -720,6 +720,7 @@ function result_balance(mes) {
 	};
 	starting_dialog.set_text(q);
 	scene.update.remove(view_piece_handler);
+	scene.update.remove(piece_handler);
 }
 
 function view_piece_handler() {
@@ -760,7 +761,7 @@ function piece_handler() {
 				n_dollar: n_dollar,
 			},}};
 		scene.message.fire(mes);
-		scene.update.remove(piece_handler);
+		// scene.update.remove(piece_handler);
 		check_index++;
 		return;
 	}
