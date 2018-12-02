@@ -27,6 +27,7 @@ var audience_player = audience.createPlayer();
 var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
 
 var scene;
+var navigation_scene;
 
 var starting_dialog;
 // play_status.phase
@@ -91,9 +92,11 @@ var score_realtime;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports.play_status = play_status;
 module.exports.dd = dd;
+module.exports.score_realtime = score_realtime;
 
-function set_scene(sc) {
+function set_scene(sc, nv) {
 	scene = sc;
+	navigation_scene = nv;
 	score.set_scene(scene);
 	op.set_scene(scene);
 }
@@ -153,6 +156,10 @@ function init_game (p) {
 	starting_dialog = new dialog.normal(p);
 	bgm_player.play(scene.assets[conf.audio.bgm.util]);
 	// configure_game();
+
+	scene.setInterval(function(){
+		console.log('hb');
+	}, 1000);
 }
 module.exports.init_game = init_game;
 
@@ -192,12 +199,19 @@ function start () {
 		callback_function: {
 			tap: register_game,
 			timeout: register_game,
+			// tap: sw_scene,
+			// timeout: sw_scene,
 		},
 		count_down: default_message_sec,
 	};
 	starting_dialog.set_text(q);
 }
 module.exports.start = start;
+
+// function sw_scene() {
+// 	g.game.replaceScene(navigation_scene, true);
+// 	console.log('after sw');
+// }
 
 function register_game () {
 	play_status.phase = 1;

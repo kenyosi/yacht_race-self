@@ -24,6 +24,7 @@ var race                       = require('./race');
 var piece                      = require('./piece');
 // var op                         = require('./operation');
 // var set_inital_locations       = require('./set_initial_locations');
+var navigation                 = require('./navigation');
 var game_manager               = require('./self/game_manager');
 var wm                         = require('./self/window_manager');
 var wind                       = require('./wind');
@@ -49,12 +50,15 @@ function main() {
 			'info_girl1_info_girl1_zyunbihaiikana1', 'line_girl1_line_girl1_kekkawohappyoushimasu1', 
 			'decision3', 'decision9', 'nc97718', 'nc10333']
 	});
+
+	var navi_scene = navigation.create(scene);
+
 	wind.set_scene(scene);
 	race.set_scene(scene);
 	piece.set_scene(scene);
 	// op.set_scene(scene);
 	wm.set_scene(scene);
-	game_manager.set_scene(scene);
+	game_manager.set_scene(scene, navi_scene);
 
 	scene.loaded.add(function () {
 		// local plan view
@@ -107,6 +111,8 @@ function main() {
 		scene.setTimeout(function() {wm.create();}, 100);
 	});
 	g.game.pushScene(scene);
+
+	
 }
 module.exports = main;
 

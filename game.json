@@ -257,6 +257,11 @@
 			"type": "script",
 			"path": "script/self/timer.js",
 			"global": true
+		},
+		"navigation": {
+			"type": "script",
+			"path": "script/navigation.js",
+			"global": true
 		}
 	},
 	"environment": {
