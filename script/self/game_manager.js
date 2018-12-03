@@ -218,6 +218,10 @@ module.exports.start = start;
 function register_game () {
 	play_status.phase = 1;
 	scene.assets['decision3'].play();
+	wm.local_scene_player[conf.players.max_sync_players].set_local_scene(); //<--- conf.players.max_async_players, // leads no player
+	piece_index = conf.players.max_sync_players;
+	view_piece_index = conf.players.max_sync_players;
+
 	play_status.elimination_round_player =[];
 	score_realtime.clear_score();
 	score_realtime.pane.show();
@@ -279,7 +283,7 @@ function elimination_start_async() {
 
 	player_index = player.join(g.game.player);// login, here
 	view_player_index = player_index;
-	wm.local_scene_player[view_player_index].set_local_scene(); //<--- piece index
+	wm.local_scene_player[elimination_piece_index].set_local_scene(); //<--- piece index
 	piece_index = elimination_piece_index;
 	view_piece_index = elimination_piece_index;
 
@@ -295,7 +299,7 @@ function elimination_start_async() {
 	// send initial state to score board
 	bcast_message_event.data.destination = 'score_file';
 	bcast_message_event.data.player_index = player_index;
-	bcast_message_event.data.piece_index = player_index; // <-- tentative
+	bcast_message_event.data.piece_index = elimination_piece_index; // <-- tentative
 	bcast_message_event.data.check_index = -1;
 	bcast_message_event.data.time = 0;
 	bcast_message_event.data.n_dollar = 0;
@@ -319,7 +323,7 @@ function elimination_start_async() {
 	var mes = {
 		data: {
 			destination: 'game_manager_elimination_start_async_timer',
-			player_index: 2,
+			player_index: player_index,
 			value: play_status,
 		}
 	};
@@ -548,6 +552,7 @@ function game_matching(mes) {
 	// re-address piece index here
 	// var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
 	var sr = score_realtime.get_result();
+	score_realtime.clear_score();
 	var n_players = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
 
 	var ii = 0;
@@ -557,6 +562,8 @@ function game_matching(mes) {
 		if (sr[ii][1] === player_index) {
 			// set scene for the player
 			wm.local_scene_player[ii].set_local_scene();
+			piece_index = ii;
+			view_piece_index = ii;
 			// set opration GUI
 			pop.set_default();
 			pop.set_player_index(player_index);
@@ -567,7 +574,7 @@ function game_matching(mes) {
 			// send initial state to score board
 			bcast_message_event.data.destination = 'score_file';
 			bcast_message_event.data.player_index = player_index;
-			bcast_message_event.data.piece_index = player_index; // <-- tentative
+			bcast_message_event.data.piece_index = piece_index; // <-- tentative
 			bcast_message_event.data.check_index = -1;
 			bcast_message_event.data.time = 0;
 			bcast_message_event.data.n_dollar = 0;
@@ -604,10 +611,9 @@ function game_start_sync_count_down(mes) {
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	play_status.starting_age = mes.data.starting_age;
 	play_status.ending_age   = mes.data.ending_age;
+	piece_handler_destination = 'game_manager_after_goal';
 	view_piece_handler();
 	piece_handler();
-	piece_handler_destination = 'game_manager_after_goal';
-	score_realtime.clear_score();
 
 	view_player_index = player_index;
 
