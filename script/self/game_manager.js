@@ -448,6 +448,8 @@ function elimination_after_goal(mes) {
 			count_down: waiting_sec,
 		};
 	}
+	scene.update.remove(view_piece_handler); //<-- added in phase 3
+	scene.update.remove(piece_handler);      //<-- added in phase 3
 	starting_dialog.set_text(q);
 }
 module.exports.elimination_after_goal = elimination_after_goal;
@@ -467,18 +469,26 @@ function elimination_game_set(mes) {
 		callback_function: {
 			tap: undefined,
 			timeout: bidding_game,
+			// timeout: undefined,
 		},
 		count_down: waiting_sec,
 	};
 	starting_dialog.set_text(q);
+
+	// scene.update.add(function elimination_wait(){
+	// 	if (g.game.age > play_status.ending_age) {
+	// 		game_timeout();
+	// 		return;
+	// 	}
+	// });
+
+
 }
 module.exports.elimination_game_set =  elimination_game_set;
 
 function bidding_game(mes) {
 	play_status.phase = 7;
 	check_index = 0;
-	scene.update.remove(view_piece_handler);
-	scene.update.remove(piece_handler); // <---
 
 	var ii = 0;
 	while (ii < check_area.length) {
@@ -713,6 +723,8 @@ function game_set(mes) {
 		count_down: (play_status.ending_age - g.game.age) / g.game.fps + default_message_sec,
 
 	};
+	scene.update.remove(view_piece_handler);
+	scene.update.remove(piece_handler);
 	starting_dialog.set_text(q);
 }
 module.exports.elimination_game_set =  elimination_game_set;
@@ -757,8 +769,7 @@ function result_balance(mes) {
 		count_down: 10,
 	};
 	starting_dialog.set_text(q);
-	scene.update.remove(view_piece_handler);
-	scene.update.remove(piece_handler);
+
 }
 
 function pass_though() {}
