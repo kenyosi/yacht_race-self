@@ -497,6 +497,15 @@ function bidding_game(mes) {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選結果と賭けの対象の表示(TBD)'},
 			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*2, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*3, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*5, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
 		],
 		callback_function: {
 			tap: game_matching,
