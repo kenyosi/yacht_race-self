@@ -268,7 +268,7 @@ function register_game () {
 			],
 			callback_function: {
 				tap: elimination_start_async,
-				timeout: elimination_game_set,
+				timeout: elimination_game_wait,
 			},
 			count_down: default_message_sec,
 		};
@@ -386,6 +386,39 @@ function elimination_start_async_timer(mes) {
 
 }
 module.exports.elimination_start_async_timer = elimination_start_async_timer;
+
+function elimination_game_wait(mes) {
+	play_status.phase = 6;
+	var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
+	// var end_age_of_elimination = 
+	console.log(waiting_sec);
+	// bgm_player.stop();
+	var q = {
+		text: [
+			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選中です'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: '結果が揃うまで'},
+			{x: 4, y:  14 + 18*2, font_size: 16, s: 'しばらくお待ち下さい'},
+		],
+		callback_function: {
+			tap: undefined,
+			// timeout: bidding_game,
+			timeout: undefined,
+		},
+		count_down: waiting_sec,
+	};
+	starting_dialog.set_text(q);
+	piece_handler_destination = 'game_manager_elimination_after_goal';
+	// scene.update.add(view_piece_handler); // no mean
+	scene.update.add(piece_handler);
+	// scene.update.add(function elimination_wait(){
+	// 	if (g.game.age > play_status.ending_age) {
+	// 		game_timeout();
+	// 		return;
+	// 	}
+	// });
+}
+module.exports.elimination_game_wait =  elimination_game_wait;
+
 function game_timeout() {
 // function game_timeout(destionation_function) {
 	var n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
@@ -454,37 +487,7 @@ function elimination_after_goal(mes) {
 }
 module.exports.elimination_after_goal = elimination_after_goal;
 
-function elimination_game_set(mes) {
-	play_status.phase = 6;
-	var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
-	// var end_age_of_elimination = 
-	console.log(waiting_sec);
-	// bgm_player.stop();
-	var q = {
-		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選中です'},
-			{x: 4, y:  14 + 18*1, font_size: 16, s: '結果が揃うまで'},
-			{x: 4, y:  14 + 18*2, font_size: 16, s: 'しばらくお待ち下さい'},
-		],
-		callback_function: {
-			tap: undefined,
-			timeout: bidding_game,
-			// timeout: undefined,
-		},
-		count_down: waiting_sec,
-	};
-	starting_dialog.set_text(q);
 
-	// scene.update.add(function elimination_wait(){
-	// 	if (g.game.age > play_status.ending_age) {
-	// 		game_timeout();
-	// 		return;
-	// 	}
-	// });
-
-
-}
-module.exports.elimination_game_set =  elimination_game_set;
 
 function bidding_game(mes) {
 	play_status.phase = 7;
@@ -727,7 +730,7 @@ function game_set(mes) {
 	scene.update.remove(piece_handler);
 	starting_dialog.set_text(q);
 }
-module.exports.elimination_game_set =  elimination_game_set;
+module.exports.game_set =  game_set;
 
 function game_result(mes) {
 	play_status.phase = 12;
@@ -772,7 +775,7 @@ function result_balance(mes) {
 
 }
 
-function pass_though() {}
+// function pass_though() {}
 
 function view_piece_handler() {
 	var xy = {
