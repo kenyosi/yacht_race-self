@@ -789,7 +789,7 @@ function view_piece_handler() {
 }
 function piece_handler() {
 	// console.log(check_index);
-	if (play_status.phase != 4 && play_status.phase != 9) return;
+	if (play_status.phase != 4 && play_status.phase != 9 && play_status.phase != 6) return;
 	if (g.game.age > play_status.ending_age) {
 		game_timeout();
 		return;
