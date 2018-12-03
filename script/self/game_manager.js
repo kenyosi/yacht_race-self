@@ -27,7 +27,7 @@ var audience_player = audience.createPlayer();
 var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
 
 var scene;
-var navigation_scene;
+// var navigation_scene;
 
 var starting_dialog;
 // play_status.phase
@@ -54,6 +54,7 @@ var play_status = {
 	elimination_round_player: [],
 	round_player: [],
 };
+var number_count_down_pointer; // testing purpose
 
 var score                      = require('../score');
 var player                     = require('./player');
@@ -71,8 +72,8 @@ var pop;
 var elimination_piece_index = 0; // always zero
 var piece_index;
 var view_piece_index;
-var player_index;
-var view_player_index;
+var player_index = -1;      // -1 means anonimous user
+var view_player_index = -1; // -1 means anonimous user
 var current_count;
 var piece_handler_destination;
 var check_area = [];
@@ -154,12 +155,13 @@ function init_game (p) {
 	score_realtime = new score.realtime();
 	p = dialog.default_parameters;
 	starting_dialog = new dialog.normal(p);
+	// var countdown_line = 2;
+	// number_count_down_pointer = starting_dialog.text[countdown_line];
 	bgm_player.play(scene.assets[conf.audio.bgm.util]);
 	// configure_game();
-
-	scene.setInterval(function(){
-		console.log('hb');
-	}, 1000);
+	// scene.setInterval(function(){
+	// 	console.log('hb');
+	// }, 1000);
 }
 module.exports.init_game = init_game;
 
@@ -276,9 +278,8 @@ function elimination_start_async() {
 	se_player.play(scene.assets.decision3);
 
 	player_index = player.join(g.game.player);// login, here
-
 	view_player_index = player_index;
-	wm.local_scene_player[view_player_index].set_local_scene();
+	wm.local_scene_player[view_player_index].set_local_scene(); //<---
 	piece_index = elimination_piece_index;
 	view_piece_index = elimination_piece_index;
 
@@ -354,6 +355,7 @@ function elimination_start_async_timer(mes) {
 	starting_dialog.set_text(q);
 	var countdown_line = 2;
 	starting_dialog.text[countdown_line].update.add(function elimination_countdown_timer(){
+	// number_count_down_pointer.update.add(function elimination_countdown_timer(){
 		if (play_status.phase !== 3) return;
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps * 3 + 10)) {
@@ -371,6 +373,8 @@ function elimination_start_async_timer(mes) {
 		var cn = current_count / g.game.fps;
 		starting_dialog.text[countdown_line].text = cn.toString();
 		starting_dialog.text[countdown_line].invalidate();
+		// number_count_down_pointer.text = cn.toString();
+		// number_count_down_pointer.invalidate();
 		if (current_count > 0) return;
 		play_status.phase = 4;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
@@ -381,6 +385,7 @@ function elimination_start_async_timer(mes) {
 		// 	game_timeout('game_manager_elimination_after_goal');
 		// }, elimination_game_milliseconds);
 		starting_dialog.text[countdown_line].update.remove(elimination_countdown_timer);
+		// number_count_down_pointer.update.remove(elimination_countdown_timer);
 	});
 
 }
@@ -509,12 +514,12 @@ function bidding_game(mes) {
 	var sr = score_realtime.get_result();
 	var sb = score_realtime.get_best();
 	console.log(sr);
-	var n_plyaers = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
+	var n_players = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
 	var is_ranked = false;
 	var result_line;
 	ii = 0;
 	console.log(player_index);
-	while (ii < n_plyaers) {
+	while (ii < n_players) {
 		var result_player_index = sr[ii][1];
 		result_line = (ii+1) + '位, P' + (result_player_index+1);
 		if (sr[ii][2] === 2) result_line += ', タイム=' +  sr[ii][3];
@@ -533,6 +538,24 @@ module.exports.bidding_game =  bidding_game;
 
 function game_matching(mes) {
 	play_status.phase = 8;
+
+	// re-address piece index here
+	// var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
+	var sr = score_realtime.get_result();
+	var n_players = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
+
+	var ii = 0;
+	while (ii < n_players) {
+		dd[ii].set_player_index(sr[ii][1]);
+		dd[ii].set_view_player_index(player_index);
+		++ii;
+	}
+	while (ii < conf.players.max_sync_players) {
+		dd[ii].set_player_index(conf.players.max_async_players); // leads no player
+		dd[ii].set_view_player_index(-1);
+		++ii;
+	}
+
 
 	// sync this timer over players
 	if (player_index !== 0) return;
@@ -606,6 +629,7 @@ function game_start_sync_count_down(mes) {
 	starting_dialog.set_text(q);
 	var countdown_line = 2;
 	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
+	// number_count_down_pointer.update.add(function countdown_timer(){
 		console.log(g.game.age +','+ play_status.starting_age);
 		if (play_status.phase !== 8) return;
 		current_count = play_status.starting_age - g.game.age;
@@ -619,6 +643,8 @@ function game_start_sync_count_down(mes) {
 		var cn = current_count / g.game.fps;
 		starting_dialog.text[countdown_line].text = cn.toString();
 		starting_dialog.text[countdown_line].invalidate();
+		// number_count_down_pointer.text = cn.toString();
+		// number_count_down_pointer.invalidate();
 		if (current_count > 0) return;
 		play_status.phase = 9;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
@@ -628,6 +654,7 @@ function game_start_sync_count_down(mes) {
 		// 	game_timeout('game_manager_after_goal');
 		// }, elimination_game_milliseconds);
 		starting_dialog.text[countdown_line].update.remove(countdown_timer);
+		// number_count_down_pointer.update.remove(countdown_timer);
 	});
 }
 module.exports.game_start_sync_count_down = game_start_sync_count_down;
