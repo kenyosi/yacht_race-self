@@ -645,8 +645,11 @@ function game_start_sync_count_down(mes) {
 	play_status.starting_age = mes.data.starting_age;
 	play_status.ending_age   = mes.data.ending_age;
 	piece_handler_destination = 'game_manager_after_goal';
+	console.log('here0');
 	view_piece_handler();
+	console.log('here1');
 	piece_handler();
+	console.log('here2');
 
 	view_player_index = player_index;
 
@@ -664,10 +667,11 @@ function game_start_sync_count_down(mes) {
 		},
 	};
 	starting_dialog.set_text(q);
+	console.log('here3');
 	var countdown_line = 2;
 	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
 	// number_count_down_pointer.update.add(function countdown_timer(){
-		// console.log(g.game.age +','+ play_status.starting_age);
+		console.log(g.game.age +','+ play_status.starting_age);
 		if (play_status.phase !== 8) return;
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps *2 + 10)) {
@@ -800,8 +804,12 @@ function result_balance(mes) {
 }
 
 // function pass_though() {}
+function watch_game_handler() {
+	if (g.game.age > play_status.ending_age) game_timeout();
+}
 
 function view_piece_handler() {
+	if (view_piece_index >= conf.players.max_sync_players || view_piece_index < 0) return;
 	var xy = {
 		x: dd[view_piece_index].group.tag.global.x + dd[view_piece_index].group.tag.global.width / 2,
 		y: dd[view_piece_index].group.tag.global.y + dd[view_piece_index].group.tag.global.height / 2,
@@ -811,10 +819,10 @@ function view_piece_handler() {
 }
 function piece_handler() {
 	// console.log(check_index);
-	if (play_status.phase === 6) {
-		if (g.game.age > play_status.ending_age) game_timeout();
-		return;
-	}
+	// if (play_status.phase === 6) {
+	// 	if (g.game.age > play_status.ending_age) game_timeout();
+	// 	return;
+	// }
 
 	if (play_status.phase !== 4 && play_status.phase !== 9) return;
 	if (g.game.age > play_status.ending_age) {
