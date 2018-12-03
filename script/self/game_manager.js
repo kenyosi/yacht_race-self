@@ -380,11 +380,6 @@ function elimination_start_async_timer(mes) {
 		play_status.phase = 4;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
 		starting_dialog.group.hide();
-		// scene.setTimeout(game_timeout('game_manager_elimination_after_goal'), elimination_game_milliseconds);
-		// scene.setTimeout(function() {
-		// 	console.log('timeout el');
-		// 	game_timeout('game_manager_elimination_after_goal');
-		// }, elimination_game_milliseconds);
 		starting_dialog.text[countdown_line].update.remove(elimination_countdown_timer);
 		// number_count_down_pointer.update.remove(elimination_countdown_timer);
 	});
@@ -514,8 +509,6 @@ function bidding_game(mes) {
 		callback_function: {
 			tap: game_matching,
 			timeout: game_matching,
-			// tap: start,
-			// timeout: start,
 		},
 		count_down: default_message_sec,
 	};
@@ -547,6 +540,7 @@ function bidding_game(mes) {
 module.exports.bidding_game =  bidding_game;
 
 function game_matching(mes) {
+	console.log('game_matching');
 	play_status.phase = 8;
 
 	// re-address piece index here
@@ -598,7 +592,7 @@ function game_matching(mes) {
 		ending_age: g.game.age + g.game.fps * (ready_go_sec + game_sec), // tentative number
 	};
 	g.game.raiseEvent(bcast_message_event);
-
+	// async version
 	// var age = play_status.end_wait_elimination_age;
 	// play_status.starting_age = age + (ready_go_sec + default_message_sec) * g.game.fps;
 	// play_status.ending_age   = play_status.starting_age + game_sec * g.game.fps;
@@ -607,6 +601,8 @@ function game_matching(mes) {
 
 function game_start_sync_count_down(mes) {
 // function game_start_sync_count_down() {
+	console.log('game_start_sync_count_down');
+	console.log(mes);
 	play_status.phase = 8;
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	play_status.starting_age = mes.data.starting_age;
@@ -616,33 +612,6 @@ function game_start_sync_count_down(mes) {
 	piece_handler();
 
 	view_player_index = player_index;
-
-	// re-address piece index here
-	// piece_index = player_index;
-	// view_piece_index = view_player_index;
-	// wm.local_scene_player[piece_index].set_local_scene();
-
-	// pop.set_default();
-	// pop.set_player_index(player_index);
-	// pop.set_view_player_index(view_player_index);
-	// pop.set_piece_index(piece_index);
-	// pop.set_view_piece_index(view_piece_index);
-
-	// var ii = 0;
-	// while(ii < conf.players.max_sync_players)  {
-	// 	dd[ii].set_player_index(ii);
-	// 	dd[ii].set_view_player_index(view_player_index);
-	// 	++ii;
-	// }
-
-	// // send initial state to score board
-	// bcast_message_event.data.destination = 'score_file';
-	// bcast_message_event.data.player_index = player_index;
-	// bcast_message_event.data.piece_index = player_index; // <-- tentative
-	// bcast_message_event.data.check_index = -1;
-	// bcast_message_event.data.time = 0;
-	// bcast_message_event.data.n_dollar = 0;
-	// g.game.raiseEvent(bcast_message_event);
 
 	var q = {
 		text: [
@@ -680,10 +649,6 @@ function game_start_sync_count_down(mes) {
 		play_status.phase = 9;
 		voice_player.play(scene.assets.info_girl1_info_girl1_go2);
 		starting_dialog.group.hide();
-		// scene.setTimeout(function() {
-		// 	console.log('timeout final');
-		// 	game_timeout('game_manager_after_goal');
-		// }, elimination_game_milliseconds);
 		starting_dialog.text[countdown_line].update.remove(countdown_timer);
 		// number_count_down_pointer.update.remove(countdown_timer);
 	});
