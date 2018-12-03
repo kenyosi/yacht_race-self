@@ -389,6 +389,8 @@ module.exports.elimination_start_async_timer = elimination_start_async_timer;
 
 function elimination_game_wait(mes) {
 	play_status.phase = 6;
+	play_status.starting_age = g.game.age + g.game.fps * ready_go_sec;
+	play_status.ending_age   = g.game.age + g.game.fps * (ready_go_sec + game_sec);
 	var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
 	// var end_age_of_elimination = 
 	console.log(waiting_sec);
@@ -437,7 +439,7 @@ function game_timeout() {
 }
 
 function elimination_after_goal(mes) {
-	if (play_status.phase !== 4) return; // avoid come here twice at goal and timeup 
+	if (play_status.phase !== 4 || play_status.phase == 6) return; // avoid come here twice at goal and timeup 
 	play_status.phase = 5;
 	// bgm_player.stop();
 	var is_goal = (mes.data.score.time === undefined ? false : true);
@@ -470,7 +472,7 @@ function elimination_after_goal(mes) {
 				{x: 4, y:  14 + 18*1, font_size: 16, s: 'プレイヤー: タイム/稼ぎ'},
 				{x: 4, y:  14 + 18*2, font_size: 16, s: 'P' + (mes.data.player_index + 1) + ': なし/' + mes.data.score.n_dollar},
 				{x: 4, y:  14 + 18*3, font_size: 16, s: ''},
-				{x: 4, y:  14 + 18*4, font_size: 16, s: '予選結果がそろうまで'},
+				{x: 4, y:  14 + 18*4, font_size: 16, s: '集計中です'},
 				{x: 4, y:  14 + 18*5, font_size: 16, s: 'しばらくお待ち下さい'},
 			],
 			callback_function: {
