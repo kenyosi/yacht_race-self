@@ -218,6 +218,10 @@ module.exports.start = start;
 function register_game () {
 	play_status.phase = 1;
 	scene.assets['decision3'].play();
+	console.log(player_index);
+	console.log(player.current);
+	console.log(g.game.player);
+
 	wm.local_scene_player[conf.players.max_sync_players].set_local_scene(); //<--- conf.players.max_async_players, // leads no player
 	piece_index = conf.players.max_sync_players;
 	view_piece_index = conf.players.max_sync_players;
@@ -248,7 +252,7 @@ function register_game () {
 	starting_dialog.set_text(q);
 	var registration_closing = scene.setInterval(function (){
 		if (play_status.phase != 1) {scene.clearInterval(registration_closing); return;}
-		if (score_realtime.get_number_of_participants() < conf.players.min_elimination_players) return;
+		// if (score_realtime.get_number_of_participants() < conf.players.min_elimination_players) return;
 		play_status.phase = 2;
 		console.log('reach to min. num players');
 		// scene.clearInterval(registration_closing);
@@ -391,7 +395,8 @@ function elimination_game_wait(mes) {
 	play_status.phase = 6;
 	play_status.starting_age = g.game.age + g.game.fps * ready_go_sec;
 	play_status.ending_age   = g.game.age + g.game.fps * (ready_go_sec + game_sec);
-	var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
+	// var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
+	var waiting_sec = (play_status.ending_age -  g.game.age) / g.game.fps;
 	// var end_age_of_elimination = 
 	console.log(waiting_sec);
 	// bgm_player.stop();
@@ -423,7 +428,13 @@ module.exports.elimination_game_wait =  elimination_game_wait;
 
 function game_timeout() {
 // function game_timeout(destionation_function) {
-	var n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
+	var n_dollar = 0;
+	console.log('game_timeout');
+	console.log(piece_index);
+
+	if (piece_index !== conf.players.max_sync_players) {
+		n_dollar = dd[piece_index].group.tag.global.score.n_dollar;
+	}
 	var mes = {
 		data: {
 			destination: piece_handler_destination,
@@ -439,11 +450,19 @@ function game_timeout() {
 }
 
 function elimination_after_goal(mes) {
-	if (play_status.phase !== 4 || play_status.phase == 6) return; // avoid come here twice at goal and timeup 
+	console.log('elimination_after_goal');
+	if (play_status.phase !== 4 && play_status.phase !== 6) return; // avoid come here twice at goal and timeup 
 	play_status.phase = 5;
 	// bgm_player.stop();
 	var is_goal = (mes.data.score.time === undefined ? false : true);
-	var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
+	// var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	var waiting_sec = 6; // not determined here now!
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	if (is_goal) {
 		// scene.clearTimeout(game_timeout); //doesn't work
 		voice_player.play(scene.assets.info_girl1_info_girl1_goal1);
@@ -597,9 +616,12 @@ function game_matching(mes) {
 		++ii;
 	}
 
+	console.log(player.current);
+	console.log(g.game.player);
 
 	// sync this timer over players
-	if (player_index !== 0) return;
+	// if (player_index !== 0) return;
+	if (player.current[0].id !== g.game.player.id) return;
 	// scene.message.fire({data: { /* doesn't work */ }});
 	bcast_message_event.data = {
 		destination: 'game_manager_game_start_sync_count_down',
@@ -789,7 +811,12 @@ function view_piece_handler() {
 }
 function piece_handler() {
 	// console.log(check_index);
-	if (play_status.phase != 4 && play_status.phase != 9 && play_status.phase != 6) return;
+	if (play_status.phase === 6) {
+		if (g.game.age > play_status.ending_age) game_timeout();
+		return;
+	}
+
+	if (play_status.phase !== 4 && play_status.phase !== 9) return;
 	if (g.game.age > play_status.ending_age) {
 		game_timeout();
 		return;
