@@ -279,18 +279,18 @@ function elimination_start_async() {
 
 	player_index = player.join(g.game.player);// login, here
 	view_player_index = player_index;
-	wm.local_scene_player[view_player_index].set_local_scene(); //<---
+	wm.local_scene_player[view_player_index].set_local_scene(); //<--- piece index
 	piece_index = elimination_piece_index;
 	view_piece_index = elimination_piece_index;
 
 	pop.set_default();
 	pop.set_player_index(player_index);
 	pop.set_view_player_index(view_player_index);
-	pop.set_piece_index(piece_index);
-	pop.set_view_piece_index(view_piece_index);
+	pop.set_piece_index(elimination_piece_index);
+	pop.set_view_piece_index(elimination_piece_index);
 
-	dd[piece_index].set_player_index(player_index);
-	dd[piece_index].set_view_player_index(view_player_index);
+	dd[elimination_piece_index].set_player_index(player_index);
+	dd[elimination_piece_index].set_view_player_index(view_player_index);
 
 	// send initial state to score board
 	bcast_message_event.data.destination = 'score_file';
@@ -323,9 +323,6 @@ function elimination_start_async() {
 			value: play_status,
 		}
 	};
-	// piece_handler_destination = 'game_manager_elimination_after_goal';
-	// scene.update.add(view_piece_handler);
-	// scene.update.add(piece_handler);
 	//initialize view
 	view_piece_handler();
 	piece_handler();
@@ -548,6 +545,25 @@ function game_matching(mes) {
 	while (ii < n_players) {
 		dd[ii].set_player_index(sr[ii][1]);
 		dd[ii].set_view_player_index(player_index);
+		if (sr[ii][1] === player_index) {
+			// set scene for the player
+			wm.local_scene_player[ii].set_local_scene();
+			// set opration GUI
+			pop.set_default();
+			pop.set_player_index(player_index);
+			pop.set_view_player_index(view_player_index);
+			pop.set_piece_index(ii);
+			pop.set_view_piece_index(ii);
+
+			// send initial state to score board
+			bcast_message_event.data.destination = 'score_file';
+			bcast_message_event.data.player_index = player_index;
+			bcast_message_event.data.piece_index = player_index; // <-- tentative
+			bcast_message_event.data.check_index = -1;
+			bcast_message_event.data.time = 0;
+			bcast_message_event.data.n_dollar = 0;
+			g.game.raiseEvent(bcast_message_event);
+		}
 		++ii;
 	}
 	while (ii < conf.players.max_sync_players) {
@@ -630,7 +646,7 @@ function game_start_sync_count_down(mes) {
 	var countdown_line = 2;
 	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
 	// number_count_down_pointer.update.add(function countdown_timer(){
-		console.log(g.game.age +','+ play_status.starting_age);
+		// console.log(g.game.age +','+ play_status.starting_age);
 		if (play_status.phase !== 8) return;
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps *2 + 10)) {
