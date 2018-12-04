@@ -399,6 +399,7 @@ function elimination_game_wait(mes) {
 	var waiting_sec = (play_status.ending_age -  g.game.age) / g.game.fps;
 	// var end_age_of_elimination = 
 	console.log(waiting_sec);
+	console.log(piece_index);
 	// bgm_player.stop();
 	var q = {
 		text: [
@@ -754,8 +755,6 @@ function game_set(mes) {
 		count_down: (play_status.ending_age - g.game.age) / g.game.fps + default_message_sec,
 
 	};
-	scene.update.remove(view_piece_handler);
-	scene.update.remove(piece_handler);
 	starting_dialog.set_text(q);
 }
 module.exports.game_set =  game_set;
@@ -765,6 +764,8 @@ function game_result(mes) {
 	se_player.play(scene.assets.decision3);
 	voice_player.play(scene.assets.line_girl1_line_girl1_kekkawohappyoushimasu1);
 	bgm_player.play(scene.assets[conf.audio.bgm.util]);
+	scene.update.remove(view_piece_handler);
+	scene.update.remove(piece_handler);
 	var q = {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: 'レース結果'},
@@ -823,12 +824,14 @@ function piece_handler() {
 	// 	if (g.game.age > play_status.ending_age) game_timeout();
 	// 	return;
 	// }
-
-	if (play_status.phase !== 4 && play_status.phase !== 9) return;
+	console.log(g.game.age + ', ' + play_status.ending_age + ', ' + play_status.phase + ', ' + piece_index);
+	if (play_status.phase !== 4 && play_status.phase !== 9 && play_status.phase !== 6) return;
 	if (g.game.age > play_status.ending_age) {
 		game_timeout();
 		return;
 	}
+	if (play_status.phase !== 4 && play_status.phase !== 9) return;
+	if (piece_index == conf.players.max_sync_players) return;
 	if (check_index >= check_area.length) return;
 	if (!check_area[check_index].validate(dd[piece_index])) return;
 	// console.log(check_index);
