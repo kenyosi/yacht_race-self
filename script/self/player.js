@@ -48,6 +48,7 @@ var status_bar_messages = [];
 // }
 var caster ={join_event: false};
 
+var bcast_message_event = new g.MessageEvent({}, undefined, false, 1);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // module.exports.head            = head;
 module.exports.caster         = caster;
@@ -67,7 +68,7 @@ function init() {
 }
 module.exports.init = init;
 
-function join(player) {
+function join_from_local(player) {
 	if (player === undefined) return false;
 	if (player.id === undefined) return false;
 	var player_index;
@@ -78,14 +79,35 @@ function join(player) {
 		current[player_index].time_warning = 0;
 	}
 	else {
-		// joins a new player joins by timestamp
-		player_index = current.length;
-		current[player_index] = new_propoeties(player, player_index, current_time);
-		current_inverse[player.id] = player_index;
+		// joins a new player by timestamp
+		bcast_message_event.data = {
+			destination: 'player_add_index',
+			// player_index: player_index,
+			player: {
+				id: player.id,
+				name: undefined,
+			},
+			current_time: current_time,
+		};
+		g.game.raiseEvent(bcast_message_event);
+		// player_index = current.length;
+		// current[player_index] = new_propoeties(player, player_index, current_time);
+		// current_inverse[player.id] = player_index;
 	}
 	return player_index;
 }
-module.exports.join = join;
+module.exports.join_from_local = join_from_local;
+
+function add_index(mes) {
+	if (mes === undefined) return;
+	if (mes.data === undefined) return;
+	if (mes.data.player.id in current_inverse) return; // check twice here
+	var player_index = current.length;
+	current[mes.data.player_index] = new_propoeties(mes.data.player, player_index, mes.data.current_time);
+	current_inverse[mes.data.player_id] = player_index;
+}
+module.exports.add_index = add_index;
+
 
 // function set_scene(sc) { scene = sc;}
 // module.exports.set_scene = set_scene;
@@ -240,7 +262,6 @@ function get_group(id) {
 	return current[player_index].group;
 }
 module.exports.get_group = get_group;
-
 
 function new_propoeties(player, player_index, timestamp) {
 	var ip = (player_index + 1).toString();
