@@ -103,7 +103,7 @@ function add_index(mes) {
 	if (mes.data === undefined) return;
 	if (mes.data.player.id in current_inverse) return; // check twice here
 	var player_index = current.length;
-	current[mes.data.player_index] = new_propoeties(mes.data.player, player_index, mes.data.current_time);
+	current[player_index] = new_propoeties(mes.data.player, player_index, mes.data.current_time);
 	current_inverse[mes.data.player.id] = player_index;
 }
 module.exports.add_index = add_index;
