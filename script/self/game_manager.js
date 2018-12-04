@@ -265,12 +265,14 @@ module.exports.register_game = register_game;
 function elimination_registrtaion() {
 	play_status.phase = 3;
 	se_player.play(scene.assets.decision3);
+	console.log('registration');
+	console.log(player.current);
 	console.log(g.game.player);
 	var pi = player.join_from_local(g.game.player,
 		function (pi) {
 			elimination_start_async(pi);
 		});// login, here
-	if (player_index !== -1) elimination_start_async(pi);
+	if (pi !== -1) elimination_start_async(pi);
 }
 
 function elimination_start_async(pi) {
@@ -278,9 +280,9 @@ function elimination_start_async(pi) {
 	// player_index = player.join_from_local(g.game.player);// login, here
 	player_index = pi;
 
-
-	console.log(pi);
+	console.log('registered');
 	console.log(player.current);
+	console.log(pi);
 	view_player_index = player_index;
 	wm.local_scene_player[elimination_piece_index].set_local_scene(); //<--- piece index
 	piece_index = elimination_piece_index;
