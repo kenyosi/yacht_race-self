@@ -269,9 +269,6 @@ function elimination_registrtaion() {
 	console.log(player.current);
 	console.log(g.game.player);
 	var pi = player.join_from_local(g.game.player, elimination_start_async);
-		// function (pi) {
-		// 	elimination_start_async(pi);
-		// });// login, here
 	if (pi !== -1) elimination_start_async(pi);
 }
 
@@ -584,22 +581,23 @@ function game_matching(mes) {
 	// var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
 
 	var n_players = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
-	pop.set_player_index(conf.players.max_async_players); // leads no players
+	wm.local_scene_player[conf.players.max_sync_players].set_local_scene(); // will modifiy later
+	pop.set_default();
+	pop.set_player_index(conf.players.max_sync_players); // will modifiy later
 	var ii = 0;
 	while (ii < n_players) {
 		dd[ii].set_player_index(sr[ii][1]);
 		dd[ii].set_view_player_index(player_index);
 		if (sr[ii][1] === player_index) {
 			// set scene for the player
-			wm.local_scene_player[ii].set_local_scene();
 			piece_index = ii;
 			view_piece_index = ii;
+			wm.local_scene_player[piece_index].set_local_scene();
 			// set opration GUI
-			pop.set_default();
 			pop.set_player_index(player_index);
 			// pop.set_view_player_index(view_player_index); // never change in game
-			pop.set_piece_index(ii);
-			pop.set_view_piece_index(ii);
+			pop.set_piece_index(piece_index);
+			pop.set_view_piece_index(view_piece_index);
 
 			// send initial state to score board
 			bcast_message_event.data.destination = 'score_file';
