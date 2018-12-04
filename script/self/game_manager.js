@@ -333,6 +333,7 @@ function elimination_start_async(pi) {
 	piece_handler();
 	scene.message.fire(mes);
 }
+module.exports.elimination_start_async = elimination_start_async;
 
 function elimination_start_async_timer(mes) {
 	play_status.phase = 3;

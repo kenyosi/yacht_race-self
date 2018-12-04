@@ -7,6 +7,7 @@
 var conf                       = require('../content_config');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
+var game_manager               = require('./game_manager');
 var commenting                 = require('./commenting');
 var wm                         = require('./window_manager');
 var pointer                    = require('./pointer');
@@ -112,7 +113,8 @@ function add_index(mes) {
 	if (mes.data.player.id !== g.game.player.id) return;
 	console.log('end_call_back');
 	console.log(player_index);
-	mes.data.call_back_function(player_index);
+	// mes.data.call_back_function(player_index); // no call back function work (sandbox works)
+	game_manager.elimination_start_async(player_index); // no call back function works (sandbox works)
 }
 module.exports.add_index = add_index;
 
