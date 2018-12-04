@@ -251,7 +251,8 @@ function register_game () {
 			{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
 		],
 		callback_function: {
-			tap: elimination_start_async,
+			// tap: elimination_start_async,
+			tap: elimination_registrtaion,
 			timeout: elimination_game_wait,
 		},
 		count_down: el_end_delta_sec,
@@ -261,14 +262,24 @@ function register_game () {
 }
 module.exports.register_game = register_game;
 
-function elimination_start_async() {
+function elimination_registrtaion() {
 	play_status.phase = 3;
 	se_player.play(scene.assets.decision3);
 	console.log(g.game.player);
-	player_index = player.join_from_local(g.game.player);// login, here
+	var pi = player.join_from_local(g.game.player,
+		function (pi) {
+			elimination_start_async(pi);
+		});// login, here
+	if (player_index !== -1) elimination_start_async(pi);
+}
+
+function elimination_start_async(pi) {
+	play_status.phase = 3;
+	// player_index = player.join_from_local(g.game.player);// login, here
+	player_index = pi;
 
 
-	
+	console.log(pi);
 	console.log(player.current);
 	view_player_index = player_index;
 	wm.local_scene_player[elimination_piece_index].set_local_scene(); //<--- piece index
@@ -322,9 +333,9 @@ function elimination_start_async() {
 }
 
 function elimination_start_async_timer(mes) {
+	play_status.phase = 3;
 	bgm_player.stop();
 	play_status = mes.data.value;
-	play_status.phase = 3;
 	scene.assets['info_girl1_info_girl1_zyunbihaiikana1'].play();
 	var q = {
 		text: [

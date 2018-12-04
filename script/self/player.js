@@ -11,18 +11,19 @@ var commenting                 = require('./commenting');
 var wm                         = require('./window_manager');
 var pointer                    = require('./pointer');
 var piece                      = require('../piece');
-var current                    = [// intend deep copy, and avoid reference copy
-	{
-		id: '-9999',
-		name: '',
-		head: '',
-		timestamp: conf.const.old_unix_time,
-		time_warning: 0,
-		player_plate: 0,
-		player_plate_status: 0,
-		login: false,
-		group: 'admin'
-	},];
+// var current                    = [// intend deep copy, and avoid reference copy
+// 	{
+// 		id: '-9999',
+// 		name: '',
+// 		head: '',
+// 		timestamp: conf.const.old_unix_time,
+// 		time_warning: 0,
+// 		player_plate: 0,
+// 		player_plate_status: 0,
+// 		login: false,
+// 		group: 'admin'
+// 	},];
+var current = [];
 var current_inverse = {};
 
 var validate_index = [
@@ -68,10 +69,10 @@ function init() {
 }
 module.exports.init = init;
 
-function join_from_local(player) {
+function join_from_local(player, call_back_function) {
 	if (player === undefined) return false;
 	if (player.id === undefined) return false;
-	var player_index;
+	var player_index = -1;
 	var current_time = g.game.age;
 	if (player.id in current_inverse) {
 		player_index = current_inverse[player.id];
@@ -88,6 +89,7 @@ function join_from_local(player) {
 				name: undefined,
 			},
 			current_time: current_time,
+			call_back_function: call_back_function,
 		};
 		g.game.raiseEvent(bcast_message_event);
 		// player_index = current.length;
@@ -105,6 +107,8 @@ function add_index(mes) {
 	var player_index = current.length;
 	current[player_index] = new_propoeties(mes.data.player, player_index, mes.data.current_time);
 	current_inverse[mes.data.player.id] = player_index;
+	if (mes.data.player.id !== g.game.player.id) return;
+	mes.data.call_back_function(player_index);
 }
 module.exports.add_index = add_index;
 
