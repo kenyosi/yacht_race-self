@@ -61,6 +61,7 @@ function init() {
 			if (ev.player === undefined) return;
 			if (ev.player.id === undefined) return;
 			current[player_index] = new_propoeties(ev.player, player_index, g.game.age);
+			current_inverse[ev.player.id] = player_index;
 		}
 	});
 }
