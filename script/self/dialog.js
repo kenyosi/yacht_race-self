@@ -167,7 +167,10 @@ var normal = function (p) {
 
 	background.pointDown.add(function () {
 		if (background.tag.parent.tag.callback_function.tap === undefined) return;
-		background.tag.progress_bar.update.remove(timer_countdown);
+		if (background.tag.progress_bar.update.contains(timer_countdown)) {
+			background.tag.progress_bar.update.remove(timer_countdown);
+			console.log('removed timeout, pointDown');
+		}
 		background.tag.parent.hide();
 		// background.tag.parent.tag.callback_function.tap();
 		scene.setTimeout(function() {background.tag.parent.tag.callback_function.tap();}, 0);
@@ -176,6 +179,10 @@ var normal = function (p) {
 module.exports.normal = normal;
 
 normal.prototype.set_text = function (p) {
+	if (this.progress_bar.update.contains(this.progress_bar.tag.timer_countdown)) {
+		this.progress_bar.update.remove(this.progress_bar.tag.timer_countdown);
+		console.log('removed timeout, set_text');
+	}
 	var length_p_text = p.text.length;
 	for (var i = 0; i < length_p_text; i++) {
 		var tt = this.text[i];
