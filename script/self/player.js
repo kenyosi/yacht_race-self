@@ -68,6 +68,7 @@ function init() {
 module.exports.init = init;
 
 function join(player) {
+	if (player === undefined) return false;
 	if (player.id === undefined) return false;
 	var player_index;
 	var current_time = g.game.age;

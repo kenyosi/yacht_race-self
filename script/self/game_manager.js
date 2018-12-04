@@ -656,7 +656,7 @@ function game_start_sync_count_down(mes) {
 	var countdown_line = 2;
 	starting_dialog.text[countdown_line].update.add(function countdown_timer(){
 	// number_count_down_pointer.update.add(function countdown_timer(){
-		console.log(g.game.age +','+ play_status.starting_age);
+		// console.log(g.game.age +','+ play_status.starting_age);
 		if (play_status.phase !== 8) return;
 		current_count = play_status.starting_age - g.game.age;
 		if (current_count === (g.game.fps *2 + 10)) {
@@ -808,7 +808,7 @@ function piece_handler() {
 	// 	if (g.game.age > play_status.ending_age) game_timeout();
 	// 	return;
 	// }
-	console.log(g.game.age + ', ' + play_status.ending_age + ', ' + play_status.phase + ', ' + piece_index);
+	// console.log(g.game.age + ', ' + play_status.ending_age + ', ' + play_status.phase + ', ' + piece_index);
 	if (play_status.phase !== 4 && play_status.phase !== 9 && play_status.phase !== 6) return;
 	if (g.game.age > play_status.ending_age) {
 		game_timeout();
