@@ -56,16 +56,16 @@ module.exports.caster         = caster;
 module.exports.current         = current;
 
 function init() {
-	g.game.join.add(function (ev) {
-		var player_index = 0;
-		if (!caster.join_event) {
-			caster.join_event = true;
-			if (ev.player === undefined) return;
-			if (ev.player.id === undefined) return;
-			current[player_index] = new_propoeties(ev.player, player_index, g.game.age);
-			current_inverse[ev.player.id] = player_index;
-		}
-	});
+	// g.game.join.add(function (ev) {
+	// 	var player_index = 0;
+	// 	if (!caster.join_event) {
+	// 		caster.join_event = true;
+	// 		if (ev.player === undefined) return;
+	// 		if (ev.player.id === undefined) return;
+	// 		current[player_index] = new_propoeties(ev.player, player_index, g.game.age);
+	// 		current_inverse[ev.player.id] = player_index;
+	// 	}
+	// });
 }
 module.exports.init = init;
 

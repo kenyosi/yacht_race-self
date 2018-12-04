@@ -268,10 +268,10 @@ function elimination_registrtaion() {
 	console.log('registration');
 	console.log(player.current);
 	console.log(g.game.player);
-	var pi = player.join_from_local(g.game.player,
-		function (pi) {
-			elimination_start_async(pi);
-		});// login, here
+	var pi = player.join_from_local(g.game.player, elimination_start_async);
+		// function (pi) {
+		// 	elimination_start_async(pi);
+		// });// login, here
 	if (pi !== -1) elimination_start_async(pi);
 }
 
