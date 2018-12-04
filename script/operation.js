@@ -190,11 +190,7 @@ user_interface.prototype.set_player_index = function (index) {
 	this.player_index = index;
 	this.throttle.tag.player_index = index;
 	this.rudder.tag.player_index = index;
-};
-
-user_interface.prototype.set_view_player_index = function (index) {
-	this.view_player_index = index;
-	if (index !== -1) {
+	if (this.view_player_index === this.player_index) {
 		this.rudder.pointMove.add(this.rudder.tag.rudder_move);
 		this.throttle.pointMove.add(this.throttle.tag.throttle_move);
 		this.opp.show();
@@ -204,6 +200,20 @@ user_interface.prototype.set_view_player_index = function (index) {
 		if (this.rudder.pointMove.contains(this.rudder.tag.rudder_move)) this.rudder.pointMove.remove(this.rudder.tag.rudder_move);
 		if (this.throttle.pointMove.contains(this.throttle.tag.throttle_move)) this.throttle.pointMove.remove(this.throttle.tag.throttle_move);
 	}
+};
+
+user_interface.prototype.set_view_player_index = function (index) {
+	this.view_player_index = index;
+	// // if (index !== -1) {
+	// 	this.rudder.pointMove.add(this.rudder.tag.rudder_move);
+	// 	this.throttle.pointMove.add(this.throttle.tag.throttle_move);
+	// 	this.opp.show();
+	// }
+	// else {
+	// 	this.opp.hide();
+	// 	if (this.rudder.pointMove.contains(this.rudder.tag.rudder_move)) this.rudder.pointMove.remove(this.rudder.tag.rudder_move);
+	// 	if (this.throttle.pointMove.contains(this.throttle.tag.throttle_move)) this.throttle.pointMove.remove(this.throttle.tag.throttle_move);
+	// }
 };
 
 user_interface.prototype.set_piece_index = function (index) {

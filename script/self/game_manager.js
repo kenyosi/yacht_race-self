@@ -7,6 +7,7 @@
 var conf                       = require('../content_config');
 var default_message_sec = 7;
 var ready_go_sec         = 6;
+var registration_sec     = 7;
 var elimination_game_sec = 15;
 var elimination_game_milliseconds = elimination_game_sec * 1000;
 var game_sec = 15;
@@ -171,6 +172,11 @@ function start () {
 	play_status.phase = 0;
 	lpv.x = initial_lpv.x; //<---
 	lpv.y = initial_lpv.y; //<---
+	pop.set_player_index(conf.players.max_async_players); // leads no players
+	// clear realtime score
+	score_realtime.clear_score();
+	score_realtime.pane.show();
+
 	if (play_status.match !== 0) se_player.play(scene.assets.decision3);
 	check_index = 0;
 	var ii = 0;
@@ -192,11 +198,11 @@ function start () {
 			{x: 4, y:  14 + 18*3, font_size: 16, s: '予選と本戦が1サイクルです'},
 			{x: 4, y:  14 + 18*4, font_size: 16, s: '予選は誰でも参加できます'},
 			{x: 4, y:  14 + 18*5, font_size: 16, s: '本戦は予選の上位' + conf.players.max_sync_players +'名が出ます'},
-			{x: 4, y:  14 + 18*6, font_size: 16, s: 'スタート位置はタイム順です'},
-			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
-			{x: 4, y:  14 + 18*8, font_size: 16, s: '出場しなくても楽しめます'},
-			{x: 4, y:  14 + 18*9, font_size: 16, s: 'どの選手が勝つのか賭けることができます'},
-			{x: 4, y:  14 + 18*10, font_size: 16, s: 'レースに風を起こすことができます'},
+			{x: 4, y:  14 + 18*6, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*7, font_size: 16, s: '出場しなくても楽しめます'},
+			{x: 4, y:  14 + 18*8, font_size: 16, s: 'どの選手が勝つのか賭けることができます'},
+			{x: 4, y:  14 + 18*9, font_size: 16, s: 'レースに風を起こすことができます'},
+			{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
 		],
 		callback_function: {
 			tap: register_game,
@@ -226,9 +232,10 @@ function register_game () {
 	piece_index = conf.players.max_sync_players;
 	view_piece_index = conf.players.max_sync_players;
 
-	play_status.elimination_round_player =[];
-	score_realtime.clear_score();
-	score_realtime.pane.show();
+	var el_end_delta_sec = registration_sec + elimination_game_sec;
+	play_status.ending_age = g.game.age + (el_end_delta_sec + ready_go_sec) * g.game.fps;
+
+	// play_status.elimination_round_player =[];
 	var q = {
 		text: [
 			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選の参加受付'},
@@ -239,45 +246,18 @@ function register_game () {
 			{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
 			{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
 			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
-			{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
-			{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
+			{x: 4, y:  14 + 18*8, font_size: 16, s: '予選の上位' + conf.players.max_sync_players +'名が本戦に出ます'},
+			{x: 4, y:  14 + 18*9, font_size: 16, s: '予選の成績でスタート位置を決めます'},
 			{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
 		],
 		callback_function: {
 			tap: elimination_start_async,
-			timeout: undefined,
+			timeout: elimination_game_wait,
 		},
-		count_down: default_message_sec,
+		count_down: el_end_delta_sec,
 	};
 	starting_dialog.set_text(q);
-	var registration_closing = scene.setInterval(function (){
-		if (play_status.phase != 1) {scene.clearInterval(registration_closing); return;}
-		// if (score_realtime.get_number_of_participants() < conf.players.min_elimination_players) return;
-		play_status.phase = 2;
-		console.log('reach to min. num players');
-		// scene.clearInterval(registration_closing);
-		q = {
-			text: [
-				{x: 4, y:  14 + 18*0, font_size: 16, s: 'まもなく予選の参加受付を終了します'},
-				{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
-				{x: 4, y:  14 + 18*2, font_size: 16, s: '誰でも参加できます'},
-				{x: 4, y:  14 + 18*3, font_size: 16, s: 'タップしてタイムアタックして下さい'},
-				{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
-				{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
-				{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
-				{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
-				{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
-				{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
-				{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
-			],
-			callback_function: {
-				tap: elimination_start_async,
-				timeout: elimination_game_wait,
-			},
-			count_down: default_message_sec,
-		};
-		starting_dialog.set_text(q);		
-	}, 1000);
+
 }
 module.exports.register_game = register_game;
 
@@ -292,10 +272,10 @@ function elimination_start_async() {
 	view_piece_index = elimination_piece_index;
 
 	pop.set_default();
-	pop.set_player_index(player_index);
 	pop.set_view_player_index(view_player_index);
-	pop.set_piece_index(elimination_piece_index);
+	pop.set_player_index(player_index);
 	pop.set_view_piece_index(elimination_piece_index);
+	pop.set_piece_index(elimination_piece_index);
 
 	dd[elimination_piece_index].set_player_index(player_index);
 	dd[elimination_piece_index].set_view_player_index(view_player_index);
@@ -323,7 +303,7 @@ function elimination_start_async() {
 	starting_dialog.set_text(q);
 
 	play_status.starting_age = g.game.age + g.game.fps * ready_go_sec;
-	play_status.ending_age   = g.game.age + g.game.fps * (ready_go_sec + game_sec);
+	// play_status.ending_age   = g.game.age + g.game.fps * (ready_go_sec + elimination_game_sec); // not here before registration
 	var mes = {
 		data: {
 			destination: 'game_manager_elimination_start_async_timer',
@@ -393,8 +373,8 @@ module.exports.elimination_start_async_timer = elimination_start_async_timer;
 
 function elimination_game_wait(mes) {
 	play_status.phase = 6;
-	play_status.starting_age = g.game.age + g.game.fps * ready_go_sec;
-	play_status.ending_age   = g.game.age + g.game.fps * (ready_go_sec + game_sec);
+	// play_status.starting_age = g.game.age + g.game.fps * ready_go_sec;
+	// play_status.ending_age   = g.game.age + g.game.fps * (ready_go_sec + game_sec); //defined in registration
 	// var waiting_sec = (play_status.end_wait_elimination_age -  g.game.age) / g.game.fps;
 	var waiting_sec = (play_status.ending_age -  g.game.age) / g.game.fps;
 	// var end_age_of_elimination = 
@@ -403,8 +383,8 @@ function elimination_game_wait(mes) {
 	// bgm_player.stop();
 	var q = {
 		text: [
-			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選中です'},
-			{x: 4, y:  14 + 18*1, font_size: 16, s: '結果が揃うまで'},
+			{x: 4, y:  14 + 18*0, font_size: 16, s: '予選結果集計中'},
+			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
 			{x: 4, y:  14 + 18*2, font_size: 16, s: 'しばらくお待ち下さい'},
 		],
 		callback_function: {
@@ -453,6 +433,7 @@ function game_timeout() {
 function elimination_after_goal(mes) {
 	console.log('elimination_after_goal');
 	if (play_status.phase !== 4 && play_status.phase !== 6) return; // avoid come here twice at goal and timeup 
+	// if (play_status.phase !== 4 && play_status.phase !== 1) return; // avoid come here twice at goal and timeup 
 	play_status.phase = 5;
 	// bgm_player.stop();
 	var is_goal = (mes.data.score.time === undefined ? false : true);
@@ -578,12 +559,14 @@ function game_matching(mes) {
 	console.log('game_matching');
 	play_status.phase = 8;
 
-	// re-address piece index here
-	// var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
 	var sr = score_realtime.get_result();
 	score_realtime.clear_score();
-	var n_players = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
 
+	// re-address piece index here
+	// var r = [global_score, fi.player_index, fi.check_index, fi.time, fi.n_dollar];
+
+	var n_players = (sr.length > conf.players.max_sync_players ? conf.players.max_sync_players : sr.length);
+	pop.set_player_index(conf.players.max_async_players); // leads no players
 	var ii = 0;
 	while (ii < n_players) {
 		dd[ii].set_player_index(sr[ii][1]);
@@ -596,7 +579,7 @@ function game_matching(mes) {
 			// set opration GUI
 			pop.set_default();
 			pop.set_player_index(player_index);
-			pop.set_view_player_index(view_player_index);
+			// pop.set_view_player_index(view_player_index); // never change in game
 			pop.set_piece_index(ii);
 			pop.set_view_piece_index(ii);
 
@@ -902,6 +885,35 @@ function tentative_goal(player_index, time, n_dollar){
 	};
 	starting_dialog.set_text(q);
 }
+
+// var registration_closing = scene.setInterval(function (){
+// 	if (play_status.phase != 1) {scene.clearInterval(registration_closing); return;}
+// 	// if (score_realtime.get_number_of_participants() < conf.players.min_elimination_players) return;
+// 	play_status.phase = 2;
+// 	console.log('reach to min. num players');
+// 	// scene.clearInterval(registration_closing);
+// 	q = {
+// 		text: [
+// 			{x: 4, y:  14 + 18*0, font_size: 16, s: 'まもなく予選の参加受付を終了します'},
+// 			{x: 4, y:  14 + 18*1, font_size: 16, s: ''},
+// 			{x: 4, y:  14 + 18*2, font_size: 16, s: '誰でも参加できます'},
+// 			{x: 4, y:  14 + 18*3, font_size: 16, s: 'タップしてタイムアタックして下さい'},
+// 			{x: 4, y:  14 + 18*4, font_size: 16, s: ''},
+// 			{x: 4, y:  14 + 18*5, font_size: 16, s: 'スロットルとラダーでヨットを動かします'},
+// 			{x: 4, y:  14 + 18*6, font_size: 16, s: '風に乗れば加速します'},
+// 			{x: 4, y:  14 + 18*7, font_size: 16, s: ''},
+// 			{x: 4, y:  14 + 18*8, font_size: 16, s: ''},
+// 			{x: 4, y:  14 + 18*9, font_size: 16, s: ''},
+// 			{x: 4, y:  14 + 18*10, font_size: 16, s: ''},
+// 		],
+// 		callback_function: {
+// 			tap: elimination_start_async,
+// 			timeout: elimination_game_wait,
+// 		},
+// 		count_down: default_message_sec,
+// 	};
+// 	starting_dialog.set_text(q);		
+// }, 1000);
 
 // function broadcast_message() {
 // 	// send satisfy min number of player to all to determine end age of elimination
