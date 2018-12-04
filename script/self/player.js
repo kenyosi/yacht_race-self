@@ -101,6 +101,8 @@ function join_from_local(player, call_back_function) {
 module.exports.join_from_local = join_from_local;
 
 function add_index(mes) {
+	console.log('start_call_back');
+	console.log(mes);
 	if (mes === undefined) return;
 	if (mes.data === undefined) return;
 	if (mes.data.player.id in current_inverse) return; // check twice here
@@ -108,6 +110,8 @@ function add_index(mes) {
 	current[player_index] = new_propoeties(mes.data.player, player_index, mes.data.current_time);
 	current_inverse[mes.data.player.id] = player_index;
 	if (mes.data.player.id !== g.game.player.id) return;
+	console.log('end_call_back');
+	console.log(player_index);
 	mes.data.call_back_function(player_index);
 }
 module.exports.add_index = add_index;
