@@ -264,8 +264,9 @@ module.exports.register_game = register_game;
 function elimination_start_async() {
 	play_status.phase = 3;
 	se_player.play(scene.assets.decision3);
-
+	console.log(g.game.player);
 	player_index = player.join(g.game.player);// login, here
+	console.log(player.current);
 	view_player_index = player_index;
 	wm.local_scene_player[elimination_piece_index].set_local_scene(); //<--- piece index
 	piece_index = elimination_piece_index;

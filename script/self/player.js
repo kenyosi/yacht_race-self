@@ -23,21 +23,23 @@ var current                    = [// intend deep copy, and avoid reference copy
 		login: false,
 		group: 'admin'
 	},];
+var current_inverse = {};
+
 var validate_index = [
 	// {st: 0, en: conf.players.max_players}, // player 1, player 2, and player 3
 	{st: 0, en: conf.players.max_async_players},
 	{st: 1, en: 2},                        // player 2 only
 	{st: 2, en: 3},                        // player 3 only
 ];
-var ii = 0;
 var status_bar_messages = [];
-var head = [];
-while (ii < conf.players.max_players) {
-	var ip = (ii + 1).toString();
-	head[ii] = 'P' + ip;
-	status_bar_messages[ii] = 'あなたは' + head[ii] + 'です';
-	ii++;
-}
+// var head = [];
+// var ii = 0;
+// while (ii < conf.players.max_async_players) {
+// 	var ip = (ii + 1).toString();
+// 	head[ii] = 'P' + ip;
+// 	status_bar_messages[ii] = 'あなたは' + head[ii] + 'です';
+// 	ii++;
+// }
 // ii = 1;
 // while (ii < conf.players.max_players) {
 // 	current [ii]            = {id: '-9999', name: '', head: head[ii] + ': 募集します', timestamp: conf.const.old_unix_time, time_warning: 0, player_plate: 0, player_plate_status: 0, login: false, group: 'user'},
@@ -47,7 +49,7 @@ while (ii < conf.players.max_players) {
 var caster ={join_event: false};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-module.exports.head            = head;
+// module.exports.head            = head;
 module.exports.caster         = caster;
 module.exports.current         = current;
 
@@ -63,6 +65,25 @@ function init() {
 	});
 }
 module.exports.init = init;
+
+function join(player) {
+	if (player.id === undefined) return false;
+	var player_index;
+	var current_time = g.game.age;
+	if (player.id in current_inverse) {
+		player_index = current_inverse[player.id];
+		current[player_index].timestamp = current_time;
+		current[player_index].time_warning = 0;
+	}
+	else {
+		// joins a new player joins by timestamp
+		player_index = current.length;
+		current[player_index] = new_propoeties(player, player_index, current_time);
+		current_inverse[player.id] = player_index;
+	}
+	return player_index;
+}
+module.exports.join = join;
 
 // function set_scene(sc) { scene = sc;}
 // module.exports.set_scene = set_scene;
@@ -177,30 +198,6 @@ function validate_join(player, ci) {
 	return false;
 }
 module.exports.validate_join = validate_join;
-
-// Expensive part, should carefuley code this function, Ken Y.
-function join(player) {
-	if (player.id === undefined) return false;
-	var current_time = g.game.age;
-	var f = [];
-	var ii = 0;
-	while (ii < current.length) {
-		f[ii] = (current_time - current[ii].timestamp <=  conf.players.time.life || current[ii].group == 'admin');
-		if (current[ii].id == player.id) { // validate an existing player
-			if (f[ii]) {
-				current[ii].timestamp = current_time;
-				current[ii].time_warning = 0;
-				return ii;
-			}
-		}
-		ii++;
-	}
-	// joins a new player joins by timestamp
-	current[ii] = new_propoeties(player, ii, current_time);
-	return ii;
-}
-module.exports.join = join;
-
 
 function find_index(id, ci) {
 	// return 0;
