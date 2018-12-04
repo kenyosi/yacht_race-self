@@ -178,13 +178,13 @@ function create() {
 	var play_again_control = createPlayAgainControl(0, g.game.height - cs[2], cs[1], cs[1], conf.window_icon.restart_game, confirm_window);
 	scene.append(play_again_control);
 	var ii = 1;
-	while(ii < conf.players.max_players) {
-		var ypos = ii + 2;
-		var pind = conf.players.max_players - ii;
-		login_controls[pind] = createLoginControl(pind, 0, g.game.height - cs[ypos], cs[1], cs[1], conf.window_icon.login, confirm_window);
-		scene.append(login_controls[pind]);
-		ii++;
-	}
+	// while(ii < conf.players.max_players) {
+	var ypos = ii + 2;
+	// 	var pind = conf.players.max_players - ii;
+	// 	login_controls[pind] = createLoginControl(pind, 0, g.game.height - cs[ypos], cs[1], cs[1], conf.window_icon.login, confirm_window);
+	// 	scene.append(login_controls[pind]);
+	// 	ii++;
+	// }
 	module.exports.login_controls = login_controls;
 
 	status_bottom = new statusbar.bottom(conf.status_bar, scene);
