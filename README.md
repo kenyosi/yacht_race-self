@@ -1,17 +1,53 @@
-# reversi@self
-Reversi for two players, Akashic content (http://akashic-games.github.io/).
+# yacht_race@self
+チキチキヨットレース(仮), Akashic content (http://akashic-games.github.io/).
 
-Place disks and flip them as you like. We have more interactive time with @self.  
+開発途中です。
+2,3名の限定的な条件で稼働します。
+興味があれば連絡下さい。
 
-The repository provides the fast game development. It contains two parts, `reversi` (game specific), and `@self` (common board game). We are able to release new games only by modifying the specific parts. Following games are also created by this set:
-* Shogi (https://en.wikipedia.org/wiki/Shogi),
-* Chess (https://en.wikipedia.org/wiki/Chess), and
-* Diamond (https://en.wikipedia.org/wiki/Chinese_checkers#Diamond_game).
+# あらまし
+全員参加ヨットレースです。
+誰よりも早くゴールを目指して下さい。
+スロットルとラダーでヨットを動かします。
+風に乗るとヨットは早く進みます。
+
+予選と本戦が1サイクルです。
+予選は誰でも参加できます。
+本戦は予選の上位X名が参加します(Xは設定で可変)。
+
+手持ちのコイン(仮)は勝者に賭けて増やすことができます。
+選手、観客は風を起こし、ヨットを応援できます。
+
+# 現況
+* 実運用する関数群の探索
+* レースサイクルの設計
+* 音入れ
+
+が終わっています。
+
+[＠セルフ]から作成しています。
+
+[＠セルフ]: https://github.com/kenyosi/reversi-self "＠セルフ"
 
 # Enviroment
-Akashic Engine:2.1.2
+Akashic Engine: 2.4.0
 
 # Licence
-Codes are under the MIT license. See details in  `LICENSE ` file. The images are under creative commons 2.1 Japan by (CC BY 2.1 JP) license.
+## コード
+MIT license. See details in  `LICENSE` file.
 * MIT, http://opensource.org/licenses/MIT
+
+## 画像
+The images are under creative commons 2.1 Japan by (CC BY 2.1 JP) license.
 * CC BY 2.1 JP, https://creativecommons.org/licenses/by/2.1/jp/deed.en
+
+# 引用
+
+効果音、音声: https://soundeffect-lab.info/
+
+BGM:
+* http://commons.nicovideo.jp/material/nc97718
+* http://commons.nicovideo.jp/material/nc10333
+
+現在の参照です。
+最終的に変わるかもしれません。
